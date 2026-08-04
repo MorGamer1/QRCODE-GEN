@@ -9,7 +9,7 @@ import { EmailModule } from './common/email/email.module';
 import { RedirectCacheModule } from './common/redirect-cache/redirect-cache.module';
 import { QueueModule } from './common/queue/queue.module';
 import { RateLimitGuard } from './common/guards/rate-limit.guard';
-import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { ApiAuthGuard } from './common/guards/api-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { validateEnv } from './common/config/env.validation';
 import { HealthController } from './health/health.controller';
@@ -44,7 +44,7 @@ import { FilesModule } from './modules/files/files.module';
   controllers: [HealthController],
   providers: [
     { provide: APP_GUARD, useClass: RateLimitGuard },
-    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: ApiAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
   ],
 })

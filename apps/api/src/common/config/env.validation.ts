@@ -47,6 +47,9 @@ export const envSchema = z.object({
   S3_PUBLIC_URL: z.string().optional(),
 
   LOG_LEVEL: z.enum(['error', 'warn', 'log', 'debug', 'verbose']).default('log'),
+
+  /// Where the admin "create backup" action writes pg_dump output - mount a persistent volume here.
+  BACKUP_DIR: z.string().default('/app/backups'),
 });
 
 export type EnvSchema = z.infer<typeof envSchema>;
