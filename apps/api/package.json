@@ -51,7 +51,7 @@
     "helmet": "^8.0.0",
     "cookie-parser": "^1.4.7",
     "geoip-lite": "^1.4.10",
-    "ua-parser-js": "^1.0.40",
+    "ua-parser-js": "^2.0.10",
     "nodemailer": "^6.9.16",
     "@aws-sdk/client-s3": "^3.716.0",
     "@aws-sdk/s3-request-presigner": "^3.716.0",
