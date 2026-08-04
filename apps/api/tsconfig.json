@@ -13,7 +13,8 @@
     "strictBindCallApply": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@qrgen/qr-engine/server": ["../../packages/qr-engine/dist/server.d.ts"]
     }
   },
   "include": ["src/**/*.ts", "prisma/seed.ts"]

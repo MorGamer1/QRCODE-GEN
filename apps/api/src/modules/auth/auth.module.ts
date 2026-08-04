@@ -22,6 +22,6 @@ import { GithubStrategy } from './strategies/github.strategy';
     GoogleStrategy,
     GithubStrategy,
   ],
-  exports: [AuthService, TokenService],
+  exports: [AuthService, TokenService, PasswordService],
 })
 export class AuthModule {}
