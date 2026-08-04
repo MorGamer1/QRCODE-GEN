@@ -11,7 +11,7 @@ import { AppModule } from './app.module';
  * scales independently of request traffic.
  */
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.createApplicationContext(AppModule, { bufferLogs: true });
+  const app = await NestFactory.createApplicationContext(AppModule);
   const logger = new Logger('Worker');
   app.enableShutdownHooks();
   logger.log('Analytics worker started');
