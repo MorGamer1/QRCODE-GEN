@@ -18,7 +18,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -w -p tsconfig.json",
-    "lint": "eslint src --ext .ts",
+    "lint": "eslint src --config ../../eslint.config.mjs",
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "clean": "rm -rf dist .turbo"

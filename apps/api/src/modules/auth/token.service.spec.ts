@@ -1,3 +1,4 @@
+import { UserRole } from '@qrgen/shared';
 import { parseDurationMs, TokenService } from './token.service';
 
 describe('parseDurationMs', () => {
@@ -19,7 +20,7 @@ describe('parseDurationMs', () => {
 });
 
 describe('TokenService', () => {
-  const user = { id: 'user-1', email: 'ada@example.com', role: 'USER', isSuspended: false };
+  const user = { id: 'user-1', email: 'ada@example.com', role: UserRole.USER, isSuspended: false };
 
   function buildService() {
     const jwt = { sign: jest.fn().mockReturnValue('signed.jwt.token') };

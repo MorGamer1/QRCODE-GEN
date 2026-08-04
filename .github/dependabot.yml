@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    groups:
+      # Batch routine patch/minor bumps into one PR instead of one per package; anything major
+      # still gets its own PR to review individually.
+      minor-and-patch:
+        update-types: ['minor', 'patch']
+    open-pull-requests-limit: 10
+    labels: ['dependencies']
+
+  - package-ecosystem: 'docker'
+    directories:
+      - '/apps/api'
+      - '/apps/web'
+    schedule:
+      interval: 'weekly'
+    labels: ['dependencies', 'docker']
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    labels: ['dependencies', 'ci']

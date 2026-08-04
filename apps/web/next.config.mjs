@@ -3,6 +3,15 @@ const nextConfig = {
   transpilePackages: ['@qrgen/shared', '@qrgen/qr-engine'],
   reactStrictMode: true,
   output: 'standalone',
+  eslint: {
+    // `next build`'s built-in lint step still invokes ESLint with legacy eslintrc-only CLI
+    // options (useEslintrc, extensions), which errors against this project's flat config
+    // (eslint.config.mjs) - Next hasn't fully caught up to flat config here, hence `next lint`
+    // itself being deprecated (see apps/web/package.json's "lint" script, which runs the
+    // ESLint CLI directly and is what CI actually runs). Avoids a redundant, currently-broken
+    // second lint pass during every build.
+    ignoreDuringBuilds: true,
+  },
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: '**' },

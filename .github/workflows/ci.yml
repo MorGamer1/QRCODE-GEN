@@ -1,0 +1,142 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # Prisma's postinstall `prisma generate` only needs env("DATABASE_URL") to resolve to *some*
+  # string - it never connects at generate time (see apps/api/Dockerfile for the same pattern).
+  # Jobs that need a real database override this with their own value.
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+
+  unit-test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+
+  e2e-test:
+    name: Backend e2e tests
+    runs-on: ubuntu-latest
+    # Overrides the workflow-level dummy DATABASE_URL for every step in this job (job-level env
+    # takes precedence over workflow-level). Matters beyond just the migrate step below: dotenv
+    # (used by test/setup-e2e.ts to load .env.test) never overrides an *already-set* env var, so
+    # if DATABASE_URL were left at its workflow-level dummy value, the e2e run itself would
+    # silently keep using it instead of falling through to .env.test's real value - these must
+    # match apps/api/.env.test exactly, which is also what the service containers below use.
+    env:
+      DATABASE_URL: postgresql://postgres:qrgen_dev_password@localhost:5432/qrgen_test?schema=public
+      REDIS_URL: redis://localhost:6379/1
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: qrgen_dev_password
+          POSTGRES_DB: qrgen_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres -d qrgen_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @qrgen/api db:migrate:deploy
+      - run: pnpm --filter @qrgen/api test:e2e
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+  docker:
+    name: Docker build & compose validation
+    runs-on: ubuntu-latest
+    # Job-level permissions replace (not merge with) the workflow-level block above for this
+    # job specifically - actions:write is needed for the GHA cache backend (cache-to below) to
+    # actually persist layer cache between runs, not just read it.
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build api image (runtime target)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          target: runtime
+          push: false
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
+      - name: Build web image (runtime target)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          target: runtime
+          push: false
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+      - name: Validate docker-compose.yml
+        run: |
+          cp .env.example .env
+          docker compose config > /dev/null
+          rm .env
+      - name: Validate docker-compose.dev.yml
+        run: docker compose -f docker-compose.dev.yml config > /dev/null
