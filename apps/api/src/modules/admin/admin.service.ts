@@ -6,6 +6,7 @@ import { PrismaService } from '../../common/prisma/prisma.service';
 import { RedisService } from '../../common/redis/redis.service';
 import { SettingsService } from '../../common/settings/settings.service';
 import { AuditService } from '../../common/audit/audit.service';
+import { sanitizeQr } from '../qr-codes/qr-codes.service';
 import type { AdminListQrQueryDto, AdminListUsersQueryDto, AdminSettingsDto, AdminUpdateUserDto, AuditLogQueryDto } from './dto';
 
 @Injectable()
@@ -86,7 +87,7 @@ export class AdminService {
       }),
       this.prisma.qrCode.count({ where }),
     ]);
-    return buildPaginatedResult(items, total, query.page, query.pageSize);
+    return buildPaginatedResult(items.map(sanitizeQr), total, query.page, query.pageSize);
   }
 
   async deleteQrCode(adminId: string, qrCodeId: string): Promise<void> {

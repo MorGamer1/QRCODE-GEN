@@ -37,6 +37,18 @@ import type {
 
 const MAX_BULK = 500;
 
+/**
+ * Every read path below returns a raw Prisma row straight to the controller. QrCode carries a
+ * `passwordHash` (the redirect-gate password, argon2-hashed like account passwords) that has no
+ * business leaving the server - callers only ever need to know whether one is set.
+ */
+export function sanitizeQr<T extends { passwordHash: string | null }>(
+  qr: T,
+): Omit<T, 'passwordHash'> & { hasPassword: boolean } {
+  const { passwordHash, ...rest } = qr;
+  return { ...rest, hasPassword: passwordHash !== null };
+}
+
 @Injectable()
 export class QrCodesService {
   constructor(
@@ -96,7 +108,7 @@ export class QrCodesService {
     });
 
     this.audit.record({ userId, action: AuditAction.QR_CREATED, entityType: 'QrCode', entityId: qr.id });
-    return qr;
+    return sanitizeQr(qr);
   }
 
   async findAllForUser(userId: string, query: ListQrQueryDto) {
@@ -128,7 +140,7 @@ export class QrCodesService {
       this.prisma.qrCode.count({ where }),
     ]);
 
-    return buildPaginatedResult(items, total, query.page, query.pageSize);
+    return buildPaginatedResult(items.map(sanitizeQr), total, query.page, query.pageSize);
   }
 
   async findOneForUser(userId: string, id: string) {
@@ -137,7 +149,7 @@ export class QrCodesService {
       include: { redirectRules: { orderBy: { priority: 'asc' } }, category: true },
     });
     if (!qr) throw new NotFoundException('QR code not found');
-    return qr;
+    return sanitizeQr(qr);
   }
 
   private async requireOwned(userId: string, id: string) {
@@ -151,7 +163,7 @@ export class QrCodesService {
     const qr = await this.prisma.qrCode.update({ where: { id }, data: dto });
     this.audit.record({ userId, action: AuditAction.QR_UPDATED, entityType: 'QrCode', entityId: id });
     await this.redirectCache.invalidate(qr.shortCode);
-    return qr;
+    return sanitizeQr(qr);
   }
 
   async updateDesign(userId: string, id: string, dto: UpdateQrDesignDto) {
@@ -162,7 +174,7 @@ export class QrCodesService {
     });
     this.audit.record({ userId, action: AuditAction.QR_UPDATED, entityType: 'QrCode', entityId: id });
     await this.redirectCache.invalidate(existing.shortCode);
-    return qr;
+    return sanitizeQr(qr);
   }
 
   async updateContent(userId: string, id: string, dto: UpdateQrContentDto) {
@@ -181,7 +193,7 @@ export class QrCodesService {
     });
     this.audit.record({ userId, action: AuditAction.QR_UPDATED, entityType: 'QrCode', entityId: id });
     await this.redirectCache.invalidate(existing.shortCode);
-    return qr;
+    return sanitizeQr(qr);
   }
 
   async updateRedirectSettings(userId: string, id: string, dto: RedirectSettingsDto) {
@@ -206,7 +218,7 @@ export class QrCodesService {
     });
     this.audit.record({ userId, action: AuditAction.QR_UPDATED, entityType: 'QrCode', entityId: id });
     await this.redirectCache.invalidate(existing.shortCode);
-    return qr;
+    return sanitizeQr(qr);
   }
 
   async duplicate(userId: string, id: string, dto: DuplicateQrDto) {
@@ -234,7 +246,7 @@ export class QrCodesService {
       },
     });
     this.audit.record({ userId, action: AuditAction.QR_CREATED, entityType: 'QrCode', entityId: copy.id });
-    return copy;
+    return sanitizeQr(copy);
   }
 
   async remove(userId: string, id: string): Promise<void> {
