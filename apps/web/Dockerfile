@@ -6,7 +6,7 @@
 #
 # Build context MUST be the monorepo root (see docker-compose.yml `build.context: .`).
 
-FROM node:22-slim AS base
+FROM node:26-slim AS base
 RUN corepack enable
 ENV PNPM_HOME="/pnpm" PATH="$PNPM_HOME:$PATH"
 WORKDIR /app
@@ -40,7 +40,7 @@ RUN pnpm turbo run build --filter=@qrgen/web...
 # (for caching reasons) and must be copied in separately. Verified against a real build in
 # this repo; see the commit message for the exact tree.
 # -----------------------------------------------------------------------------------------
-FROM node:22-slim AS runtime
+FROM node:26-slim AS runtime
 RUN apt-get update && apt-get install -y --no-install-recommends dumb-init \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
