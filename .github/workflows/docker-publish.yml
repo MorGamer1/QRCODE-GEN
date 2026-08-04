@@ -45,7 +45,7 @@ jobs:
       - id: repo
         run: echo "lowercase=${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
 
-      - uses: docker/metadata-action@v5
+      - uses: docker/metadata-action@v6
         id: meta
         with:
           images: ${{ env.REGISTRY }}/${{ steps.repo.outputs.lowercase }}/${{ matrix.image }}
