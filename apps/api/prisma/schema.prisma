@@ -1,0 +1,404 @@
+// Prisma schema for the QR Code Generator platform.
+// See docs/ARCHITECTURE.md for an overview of how these models relate.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums (kept in sync with packages/shared/src/enums.ts)
+// ---------------------------------------------------------------------------
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum QrCodeType {
+  STATIC
+  DYNAMIC
+}
+
+enum ContentType {
+  URL
+  TEXT
+  EMAIL
+  PHONE
+  SMS
+  WHATSAPP
+  WIFI
+  VCARD
+  LOCATION
+  EVENT
+  CRYPTO
+  PDF
+  IMAGE
+  APP_STORE
+  SOCIAL
+  CUSTOM
+}
+
+enum RedirectRuleType {
+  DEVICE
+  COUNTRY
+  LANGUAGE
+  TIME
+}
+
+enum AuditAction {
+  USER_LOGIN
+  USER_LOGIN_FAILED
+  USER_LOGOUT
+  USER_REGISTER
+  USER_PASSWORD_RESET
+  USER_2FA_ENABLED
+  USER_2FA_DISABLED
+  USER_UPDATED
+  USER_DELETED
+  USER_ROLE_CHANGED
+  USER_SUSPENDED
+  QR_CREATED
+  QR_UPDATED
+  QR_DELETED
+  QR_ARCHIVED
+  API_KEY_CREATED
+  API_KEY_REVOKED
+  ADMIN_SETTINGS_UPDATED
+  BACKUP_CREATED
+}
+
+// ---------------------------------------------------------------------------
+// Auth / users
+// ---------------------------------------------------------------------------
+
+model User {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  passwordHash      String?
+  name              String
+  avatarUrl         String?
+  role              UserRole  @default(USER)
+  emailVerified     Boolean   @default(false)
+  isSuspended       Boolean   @default(false)
+  twoFactorEnabled  Boolean   @default(false)
+  twoFactorSecret   String?
+  lastLoginAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  accounts          Account[]
+  sessions          Session[]
+  qrCodes           QrCode[]
+  apiKeys           ApiKey[]
+  categories        Category[]
+  auditLogs         AuditLog[]
+  files             FileAsset[]
+  recoveryCodes     TwoFactorRecoveryCode[]
+  passwordResets    PasswordResetToken[]
+  emailVerifications EmailVerificationToken[]
+
+  @@index([role])
+  @@map("users")
+}
+
+/// Linked OAuth identities (Google / GitHub).
+model Account {
+  id                String   @id @default(uuid())
+  userId            String
+  provider          String
+  providerAccountId String
+  accessToken       String?  @db.Text
+  refreshToken      String?  @db.Text
+  expiresAt         Int?
+  createdAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+/// Refresh-token backed sessions, enumerable/revocable from the security settings page.
+model Session {
+  id               String    @id @default(uuid())
+  userId           String
+  refreshTokenHash String    @unique
+  userAgent        String?
+  ipAddress        String?
+  createdAt        DateTime  @default(now())
+  expiresAt        DateTime
+  revokedAt        DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("email_verification_tokens")
+}
+
+model TwoFactorRecoveryCode {
+  id        String    @id @default(uuid())
+  userId    String
+  codeHash  String
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("two_factor_recovery_codes")
+}
+
+model ApiKey {
+  id         String    @id @default(uuid())
+  userId     String
+  name       String
+  keyPrefix  String
+  keyHash    String    @unique
+  scopes     String[]
+  lastUsedAt DateTime?
+  expiresAt  DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("api_keys")
+}
+
+// ---------------------------------------------------------------------------
+// QR codes
+// ---------------------------------------------------------------------------
+
+model Category {
+  id        String   @id @default(uuid())
+  userId    String
+  name      String
+  color     String?
+  createdAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  qrCodes QrCode[]
+
+  @@unique([userId, name])
+  @@map("categories")
+}
+
+model QrCode {
+  id          String      @id @default(uuid())
+  userId      String
+  type        QrCodeType
+  contentType ContentType
+
+  /// Only set for DYNAMIC codes - the public redirect slug.
+  shortCode   String?     @unique
+
+  /// Original (STATIC) or current (DYNAMIC) content payload, shaped per contentType - see
+  /// packages/shared/src/content/schemas.ts. Static codes keep this for display purposes only.
+  content     Json
+
+  /// Precomputed literal string encoded into the QR image. Immutable once set for STATIC codes;
+  /// for DYNAMIC codes this is always the short redirect URL.
+  encodedPayload String
+
+  design      Json
+
+  name        String
+  notes       String?
+  tags        String[]
+  categoryId  String?
+  isFavorite  Boolean     @default(false)
+  isArchived  Boolean     @default(false)
+
+  // Dynamic-only redirect/access controls
+  redirectStatusCode Int       @default(302)
+  expiresAt          DateTime?
+  passwordHash        String?
+  scanLimit           Int?
+  activateAt           DateTime?
+  deactivateAt         DateTime?
+
+  // Denormalized counters, kept up to date by the analytics worker for fast dashboard reads.
+  totalScans      Int       @default(0)
+  uniqueScans     Int       @default(0)
+  firstScannedAt  DateTime?
+  lastScannedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category      Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  redirectRules RedirectRule[]
+  scans         Scan[]
+  dailyStats    ScanDailyStat[]
+
+  @@index([userId, isArchived, createdAt])
+  @@index([userId, isFavorite])
+  @@index([categoryId])
+  @@map("qr_codes")
+}
+
+model RedirectRule {
+  id              String            @id @default(uuid())
+  qrCodeId        String
+  type            RedirectRuleType
+  condition       Json
+  destinationUrl  String
+  priority        Int               @default(0)
+  isActive        Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+
+  qrCode QrCode @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+
+  @@index([qrCodeId, priority])
+  @@map("redirect_rules")
+}
+
+// ---------------------------------------------------------------------------
+// Analytics
+// ---------------------------------------------------------------------------
+
+/// Raw scan events. High write volume - kept append-only and narrow; see
+/// docs/ARCHITECTURE.md for the partitioning strategy recommended at very
+/// high volume (millions of scans/month).
+model Scan {
+  id             String   @id @default(uuid())
+  qrCodeId       String
+  scannedAt      DateTime @default(now())
+  isUnique       Boolean  @default(false)
+
+  /// Hashed/anonymized per the admin GDPR settings; null when IP storage is disabled entirely.
+  ipHash         String?
+  country        String?
+  region         String?
+  city           String?
+  latitude       Float?
+  longitude      Float?
+
+  deviceType     String?
+  os             String?
+  osVersion      String?
+  browser        String?
+  browserVersion String?
+  language       String?
+  referrer       String?  @db.Text
+  userAgent      String?  @db.Text
+  timezone       String?
+
+  utmSource      String?
+  utmMedium      String?
+  utmCampaign    String?
+  utmTerm        String?
+  utmContent     String?
+
+  qrCode QrCode @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+
+  @@index([qrCodeId, scannedAt])
+  @@index([qrCodeId, country])
+  @@index([qrCodeId, deviceType])
+  @@map("scans")
+}
+
+/// Daily rollups written incrementally by the analytics worker so dashboard charts
+/// don't have to scan raw Scan rows for common date-range queries.
+model ScanDailyStat {
+  id          String   @id @default(uuid())
+  qrCodeId    String
+  date        DateTime @db.Date
+  totalScans  Int      @default(0)
+  uniqueScans Int      @default(0)
+
+  qrCode QrCode @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+
+  @@unique([qrCodeId, date])
+  @@index([qrCodeId, date])
+  @@map("scan_daily_stats")
+}
+
+// ---------------------------------------------------------------------------
+// Files, audit log, system settings
+// ---------------------------------------------------------------------------
+
+model FileAsset {
+  id           String   @id @default(uuid())
+  userId       String
+  key          String   @unique
+  url          String
+  mimeType     String
+  sizeBytes    Int
+  originalName String
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("file_assets")
+}
+
+model AuditLog {
+  id         String      @id @default(uuid())
+  userId     String?
+  action     AuditAction
+  entityType String?
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?      @db.Text
+  createdAt  DateTime    @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action, createdAt])
+  @@map("audit_logs")
+}
+
+/// Single-row table (id is always "singleton") holding admin-configurable platform settings.
+model SystemSetting {
+  id                         String   @id @default("singleton")
+  gdprStoreIp                Boolean  @default(true)
+  gdprHashIp                 Boolean  @default(false)
+  defaultRedirectStatusCode  Int      @default(302)
+  allowPublicRegistration    Boolean  @default(true)
+  requireEmailVerification   Boolean  @default(false)
+  maxQrCodesPerUser          Int?
+  updatedAt                  DateTime @updatedAt
+
+  @@map("system_settings")
+}
