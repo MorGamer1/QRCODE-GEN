@@ -7,6 +7,7 @@ import { SettingsModule } from './common/settings/settings.module';
 import { AuditModule } from './common/audit/audit.module';
 import { EmailModule } from './common/email/email.module';
 import { RedirectCacheModule } from './common/redirect-cache/redirect-cache.module';
+import { QueueModule } from './common/queue/queue.module';
 import { RateLimitGuard } from './common/guards/rate-limit.guard';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
@@ -30,6 +31,7 @@ import { FilesModule } from './modules/files/files.module';
     AuditModule,
     EmailModule,
     RedirectCacheModule,
+    QueueModule,
     AuthModule,
     UsersModule,
     QrCodesModule,

@@ -50,3 +50,6 @@ apps/api/uploads/
 *.pem
 *.local
 .vercel
+
+# Local Redis snapshots (created when running redis-server directly in dev)
+dump.rdb

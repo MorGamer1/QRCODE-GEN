@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, VersioningType } from '@nestjs/common';
@@ -11,13 +12,28 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import type { EnvSchema } from './common/config/env.validation';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true });
   const config = app.get(ConfigService<EnvSchema, true>);
   const logger = new Logger('Bootstrap');
 
+  // Deployed behind the nginx reverse proxy (see docker-compose.yml) - trust its X-Forwarded-* headers
+  // so req.ip reflects the real client, not the proxy, for rate limiting and scan analytics.
+  app.set('trust proxy', 1);
+
   app.use(
     helmet({
-      contentSecurityPolicy: false, // the web app (Next.js) sets its own CSP; the API only ever returns JSON/binary
+      // Covers both the JSON API (CSP is a no-op there) and the redirect module's landing pages,
+      // which only ever use inline <style> and data:/https: images - no scripts, ever.
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'none'"],
+          styleSrc: ["'unsafe-inline'"],
+          imgSrc: ["'self'", 'data:', 'https:'],
+          formAction: ["'self'"],
+          baseUri: ["'none'"],
+          frameAncestors: ["'none'"],
+        },
+      },
       crossOriginResourcePolicy: { policy: 'cross-origin' },
     }),
   );
@@ -28,9 +44,12 @@ async function bootstrap(): Promise<void> {
     credentials: true,
   });
 
-  // Short redirect URLs (`/r/:code`) stay unprefixed so printed QR codes carry the shortest
-  // possible path; everything else lives under /api.
-  app.setGlobalPrefix('api', { exclude: ['r/*path', 'health'] });
+  // Every route lives under /api internally (including /api/r/:code and /api/health, both
+  // VERSION_NEUTRAL). The public, unprefixed short URLs QR codes actually encode
+  // (`https://qr.example.com/r/:code`) are produced by nginx rewriting `/r/*` -> `/api/r/*`
+  // at the edge (see infra/docker/nginx) - simpler and more robust than fighting global-prefix
+  // exclusion patterns interacting with URI versioning.
+  app.setGlobalPrefix('api');
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
 
   app.useGlobalPipes(new ZodValidationPipe());
