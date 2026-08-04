@@ -30,6 +30,12 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
+      # Explicit, not left to @prisma/client's postinstall hook - see apps/api/Dockerfile for
+      # why: postinstall's schema auto-discovery doesn't reliably resolve
+      # apps/api/prisma/schema.prisma when `pnpm install` runs from the monorepo root, silently
+      # producing a stale/empty client that fails typecheck on any field newer than whatever
+      # was last generated.
+      - run: pnpm --filter @qrgen/api exec prisma generate
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm format:check
@@ -45,6 +51,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @qrgen/api exec prisma generate
       - run: pnpm test
 
   e2e-test:
@@ -88,6 +95,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @qrgen/api exec prisma generate
       - run: pnpm --filter @qrgen/api db:migrate:deploy
       - run: pnpm --filter @qrgen/api test:e2e
 
@@ -102,6 +110,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @qrgen/api exec prisma generate
       - run: pnpm build
 
   docker:

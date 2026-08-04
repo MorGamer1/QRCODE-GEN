@@ -33,10 +33,17 @@ COPY . .
 RUN --mount=type=cache,id=qrgen-pnpm-store,target=/pnpm/store \
     pnpm install --frozen-lockfile
 
-# `prisma generate` only needs env("DATABASE_URL") in the schema to resolve to *some* string -
-# it never connects to a database at generate time. The real value is injected at container
-# runtime by docker-compose.yml.
+# Explicit, not left to @prisma/client's postinstall hook: verified live (via GitHub Actions,
+# this sandbox has no working Docker daemon to test builds directly) that postinstall's schema
+# auto-discovery does not reliably resolve apps/api/prisma/schema.prisma when `pnpm install`
+# runs from the monorepo root - it silently generated a stale/empty client, and every field
+# added since (expiresAt, passwordHash, scanLimit, the whole RedirectRule model, ...) failed
+# `nest build`'s typecheck with "does not exist on type". `prisma generate` only needs
+# env("DATABASE_URL") in the schema to resolve to *some* string - it never connects to a
+# database at generate time. The real value is injected at container runtime by
+# docker-compose.yml.
 ENV DATABASE_URL="postgresql://build:build@localhost:5432/build"
+RUN pnpm --filter=@qrgen/api exec prisma generate
 RUN pnpm turbo run build --filter=@qrgen/api...
 
 # pnpm v10's default `deploy` requires `inject-workspace-packages=true` set repo-wide, which
