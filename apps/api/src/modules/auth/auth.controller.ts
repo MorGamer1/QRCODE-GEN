@@ -19,6 +19,7 @@ import { Public } from '../../common/decorators/public.decorator';
 import { RateLimit } from '../../common/decorators/rate-limit.decorator';
 import { CurrentUser, type RequestUser } from '../../common/decorators/current-user.decorator';
 import { OAuthConfiguredGuard } from '../../common/guards/oauth-configured.guard';
+import { SettingsService } from '../../common/settings/settings.service';
 import { RATE_LIMIT } from '@qrgen/shared';
 import { AuthService } from './auth.service';
 import type { IssuedTokens } from './token.service';
@@ -42,7 +43,23 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly config: ConfigService<EnvSchema, true>,
+    private readonly settings: SettingsService,
   ) {}
+
+  /** Public, unauthenticated capability probe so the web app can hide register/OAuth UI it can't use. */
+  @Public()
+  @Get('config')
+  async authConfig() {
+    const settings = await this.settings.get();
+    return {
+      allowPublicRegistration: settings.allowPublicRegistration,
+      requireEmailVerification: settings.requireEmailVerification,
+      oauth: {
+        google: Boolean(this.config.get('GOOGLE_CLIENT_ID', { infer: true })),
+        github: Boolean(this.config.get('GITHUB_CLIENT_ID', { infer: true })),
+      },
+    };
+  }
 
   private setSessionCookies(res: Response, tokens: IssuedTokens): void {
     const secure = this.config.get('NODE_ENV', { infer: true }) === 'production';
@@ -53,18 +70,20 @@ export class AuthController {
       maxAge: tokens.accessTokenTtlMs,
       path: '/',
     });
+    // path '/' (not scoped to /auth) so the Next.js middleware can read cookie *presence*
+    // for route-guarding without ever seeing the token value - it stays httpOnly/secure.
     res.cookie(REFRESH_COOKIE, tokens.refreshToken, {
       httpOnly: true,
       secure,
       sameSite: 'lax',
       maxAge: tokens.refreshTokenTtlMs,
-      path: '/api/v1/auth',
+      path: '/',
     });
   }
 
   private clearSessionCookies(res: Response): void {
     res.clearCookie(ACCESS_COOKIE, { path: '/' });
-    res.clearCookie(REFRESH_COOKIE, { path: '/api/v1/auth' });
+    res.clearCookie(REFRESH_COOKIE, { path: '/' });
   }
 
   private meta(req: Request) {

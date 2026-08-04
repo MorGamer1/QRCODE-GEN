@@ -9,6 +9,7 @@ build/
 out/
 *.tsbuildinfo
 .turbo/
+next-env.d.ts
 
 # Environment
 .env
