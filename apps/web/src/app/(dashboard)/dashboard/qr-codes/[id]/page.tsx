@@ -52,7 +52,8 @@ export default function QrCodeDetailPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{qr.name}</h1>
           <p className="text-sm text-muted-foreground">
-            {qr.totalScans} scan{qr.totalScans === 1 ? '' : 's'} &middot; Created {formatDate(qr.createdAt)}
+            {qr.totalScans} scan{qr.totalScans === 1 ? '' : 's'} &middot; Created{' '}
+            {formatDate(qr.createdAt)}
           </p>
         </div>
       </div>

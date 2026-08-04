@@ -30,12 +30,19 @@ const CONTENT_FIELD_COMPONENTS: Record<ContentType, React.ComponentType<{ prefix
   [ContentType.CUSTOM]: CustomFields,
 };
 
-export function ContentTypeFields({ contentType, prefix }: { contentType: ContentType; prefix: string }) {
+export function ContentTypeFields({
+  contentType,
+  prefix,
+}: {
+  contentType: ContentType;
+  prefix: string;
+}) {
   const Component = CONTENT_FIELD_COMPONENTS[contentType];
   return <Component prefix={prefix} />;
 }
 
-const TIMEZONE_GUESS = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : undefined;
+const TIMEZONE_GUESS =
+  typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : undefined;
 
 /** Fresh `content.data` shape to reset to whenever the user switches content types. */
 export const DEFAULT_CONTENT_DATA: Record<ContentType, Record<string, unknown>> = {

@@ -1,4 +1,12 @@
-import { LayoutDashboard, QrCode, BarChart3, KeyRound, Settings, ShieldCheck, type LucideIcon } from 'lucide-react';
+import {
+  LayoutDashboard,
+  QrCode,
+  BarChart3,
+  KeyRound,
+  Settings,
+  ShieldCheck,
+  type LucideIcon,
+} from 'lucide-react';
 
 export interface NavItem {
   label: string;

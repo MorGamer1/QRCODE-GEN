@@ -1,7 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus, QrCode, BarChart3, KeyRound, MousePointerClick, Eye, ArrowRight } from 'lucide-react';
+import {
+  Plus,
+  QrCode,
+  BarChart3,
+  KeyRound,
+  MousePointerClick,
+  Eye,
+  ArrowRight,
+} from 'lucide-react';
 import { useCurrentUser } from '@/hooks/use-auth';
 import { useAnalyticsOverview } from '@/hooks/use-analytics';
 import { useQrCodes } from '@/hooks/use-qr-codes';
@@ -40,14 +48,24 @@ export default function DashboardPage() {
   const { data: user } = useCurrentUser();
   const firstName = user?.name?.split(' ')[0];
   const overview = useAnalyticsOverview(RANGE_30D);
-  const recentQr = useQrCodes({ page: 1, pageSize: 6, sortBy: 'updatedAt', sortOrder: 'desc', isArchived: false });
+  const recentQr = useQrCodes({
+    page: 1,
+    pageSize: 6,
+    sortBy: 'updatedAt',
+    sortOrder: 'desc',
+    isArchived: false,
+  });
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{firstName ? `Welcome back, ${firstName}` : 'Welcome back'}</h1>
-          <p className="text-sm text-muted-foreground">Here&apos;s what&apos;s happening with your QR codes.</p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {firstName ? `Welcome back, ${firstName}` : 'Welcome back'}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Here&apos;s what&apos;s happening with your QR codes.
+          </p>
         </div>
         <Button asChild>
           <Link href="/dashboard/qr-codes/new">
@@ -57,9 +75,24 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard icon={QrCode} label="QR codes" value={overview.data?.totalQrCodes} loading={overview.isPending} />
-        <StatCard icon={MousePointerClick} label="Scans (30d)" value={overview.data?.totalScans} loading={overview.isPending} />
-        <StatCard icon={Eye} label="Unique scans (30d)" value={overview.data?.totalUniqueScans} loading={overview.isPending} />
+        <StatCard
+          icon={QrCode}
+          label="QR codes"
+          value={overview.data?.totalQrCodes}
+          loading={overview.isPending}
+        />
+        <StatCard
+          icon={MousePointerClick}
+          label="Scans (30d)"
+          value={overview.data?.totalScans}
+          loading={overview.isPending}
+        />
+        <StatCard
+          icon={Eye}
+          label="Unique scans (30d)"
+          value={overview.data?.totalUniqueScans}
+          loading={overview.isPending}
+        />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -83,7 +116,11 @@ export default function DashboardPage() {
           <CardTitle>Scan trend (30 days)</CardTitle>
         </CardHeader>
         <CardContent>
-          {overview.isPending ? <Skeleton className="h-72 w-full" /> : <ScanTimeseriesChart data={overview.data?.timeseries ?? []} />}
+          {overview.isPending ? (
+            <Skeleton className="h-72 w-full" />
+          ) : (
+            <ScanTimeseriesChart data={overview.data?.timeseries ?? []} />
+          )}
         </CardContent>
       </Card>
 
@@ -113,8 +150,15 @@ export default function DashboardPage() {
           {!recentQr.isPending && recentQr.data && recentQr.data.items.length > 0 && (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
               {recentQr.data.items.map((qr) => (
-                <Link key={qr.id} href={`/dashboard/qr-codes/${qr.id}`} className="group space-y-1.5">
-                  <QrThumbnail qr={qr} className="aspect-square w-full transition-colors group-hover:border-primary/50" />
+                <Link
+                  key={qr.id}
+                  href={`/dashboard/qr-codes/${qr.id}`}
+                  className="group space-y-1.5"
+                >
+                  <QrThumbnail
+                    qr={qr}
+                    className="aspect-square w-full transition-colors group-hover:border-primary/50"
+                  />
                   <p className="truncate text-xs font-medium">{qr.name}</p>
                 </Link>
               ))}
@@ -144,7 +188,11 @@ function StatCard({
           <Icon className="h-5 w-5" />
         </div>
         <div>
-          {loading ? <Skeleton className="h-7 w-16" /> : <p className="text-2xl font-semibold leading-none">{formatNumber(value ?? 0)}</p>}
+          {loading ? (
+            <Skeleton className="h-7 w-16" />
+          ) : (
+            <p className="text-2xl font-semibold leading-none">{formatNumber(value ?? 0)}</p>
+          )}
           <p className="mt-1 text-sm text-muted-foreground">{label}</p>
         </div>
       </CardContent>

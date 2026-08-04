@@ -76,7 +76,9 @@ export function encodeWifi(payload: ContentPayloadMap[ContentType.WIFI]): string
 export function encodeVCard(payload: ContentPayloadMap[ContentType.VCARD]): string {
   const lines = ['BEGIN:VCARD', 'VERSION:3.0'];
   const fullName = [payload.firstName, payload.lastName].filter(Boolean).join(' ');
-  lines.push(`N:${escapeVCardText(payload.lastName ?? '')};${escapeVCardText(payload.firstName)};;;`);
+  lines.push(
+    `N:${escapeVCardText(payload.lastName ?? '')};${escapeVCardText(payload.firstName)};;;`,
+  );
   lines.push(`FN:${escapeVCardText(fullName)}`);
   if (payload.organization) lines.push(`ORG:${escapeVCardText(payload.organization)}`);
   if (payload.title) lines.push(`TITLE:${escapeVCardText(payload.title)}`);

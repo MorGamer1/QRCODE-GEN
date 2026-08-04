@@ -5,15 +5,34 @@ import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCategories, useCreateCategory } from '@/hooks/use-categories';
 import { ApiError } from '@/lib/api-client';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 const NONE_VALUE = '__none__';
 
-export function CategorySelect({ value, onChange }: { value: string | null; onChange: (id: string | null) => void }) {
+export function CategorySelect({
+  value,
+  onChange,
+}: {
+  value: string | null;
+  onChange: (id: string | null) => void;
+}) {
   const { data: categories } = useCategories();
   const createCategory = useCreateCategory();
   const [dialogOpen, setDialogOpen] = React.useState(false);
@@ -33,7 +52,10 @@ export function CategorySelect({ value, onChange }: { value: string | null; onCh
 
   return (
     <div className="flex gap-2">
-      <Select value={value ?? NONE_VALUE} onValueChange={(v) => onChange(v === NONE_VALUE ? null : v)}>
+      <Select
+        value={value ?? NONE_VALUE}
+        onValueChange={(v) => onChange(v === NONE_VALUE ? null : v)}
+      >
         <SelectTrigger>
           <SelectValue placeholder="No category" />
         </SelectTrigger>
@@ -48,7 +70,13 @@ export function CategorySelect({ value, onChange }: { value: string | null; onCh
       </Select>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
-          <Button type="button" variant="outline" size="icon" className="shrink-0" aria-label="New category">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="shrink-0"
+            aria-label="New category"
+          >
             <Plus className="h-4 w-4" />
           </Button>
         </DialogTrigger>
@@ -67,7 +95,11 @@ export function CategorySelect({ value, onChange }: { value: string | null; onCh
             />
           </div>
           <DialogFooter>
-            <Button type="button" onClick={handleCreate} disabled={!name.trim() || createCategory.isPending}>
+            <Button
+              type="button"
+              onClick={handleCreate}
+              disabled={!name.trim() || createCategory.isPending}
+            >
               Create
             </Button>
           </DialogFooter>

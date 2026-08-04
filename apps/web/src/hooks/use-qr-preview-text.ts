@@ -1,7 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import { ContentType, QrCodeType, buildRedirectUrl, contentSchemaMap, encodeStaticContent } from '@qrgen/shared';
+import {
+  ContentType,
+  QrCodeType,
+  buildRedirectUrl,
+  contentSchemaMap,
+  encodeStaticContent,
+} from '@qrgen/shared';
 
 const PLACEHOLDER_SHORT_CODE = 'XXXXXXX';
 

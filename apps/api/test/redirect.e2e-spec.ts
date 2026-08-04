@@ -104,7 +104,10 @@ describe('Redirect engine (e2e)', () => {
     expect(setCookieHeader).toBeDefined();
     const unlockCookie = setCookieHeader!.split(';')[0];
 
-    const res = await request(server).get(`/api/r/${created.shortCode}`).set('Cookie', unlockCookie!).expect(302);
+    const res = await request(server)
+      .get(`/api/r/${created.shortCode}`)
+      .set('Cookie', unlockCookie!)
+      .expect(302);
     expect(res.headers.location).toBe('https://example.com/landing');
   });
 
@@ -116,7 +119,10 @@ describe('Redirect engine (e2e)', () => {
       .send({ password: 'letmein123' })
       .expect(200);
 
-    await request(server).post(`/api/r/${created.shortCode}/unlock`).send({ password: 'wrong' }).expect(401);
+    await request(server)
+      .post(`/api/r/${created.shortCode}/unlock`)
+      .send({ password: 'wrong' })
+      .expect(401);
   });
 
   it('returns 410 for a deactivated QR code instead of redirecting', async () => {

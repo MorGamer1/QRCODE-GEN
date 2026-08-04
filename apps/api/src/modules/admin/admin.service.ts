@@ -7,7 +7,13 @@ import { RedisService } from '../../common/redis/redis.service';
 import { SettingsService } from '../../common/settings/settings.service';
 import { AuditService } from '../../common/audit/audit.service';
 import { sanitizeQr } from '../qr-codes/qr-codes.service';
-import type { AdminListQrQueryDto, AdminListUsersQueryDto, AdminSettingsDto, AdminUpdateUserDto, AuditLogQueryDto } from './dto';
+import type {
+  AdminListQrQueryDto,
+  AdminListUsersQueryDto,
+  AdminSettingsDto,
+  AdminUpdateUserDto,
+  AuditLogQueryDto,
+} from './dto';
 
 @Injectable()
 export class AdminService {
@@ -22,7 +28,12 @@ export class AdminService {
     const where: Prisma.UserWhereInput = {
       ...(query.role ? { role: query.role } : {}),
       ...(query.search
-        ? { OR: [{ email: { contains: query.search, mode: 'insensitive' } }, { name: { contains: query.search, mode: 'insensitive' } }] }
+        ? {
+            OR: [
+              { email: { contains: query.search, mode: 'insensitive' } },
+              { name: { contains: query.search, mode: 'insensitive' } },
+            ],
+          }
         : {}),
     };
     const [items, total] = await this.prisma.$transaction([
@@ -51,13 +62,19 @@ export class AdminService {
 
   async updateUser(adminId: string, userId: string, dto: AdminUpdateUserDto) {
     if (adminId === userId && (dto.role || dto.isSuspended)) {
-      throw new BadRequestException("You can't change your own role or suspension status - ask another admin");
+      throw new BadRequestException(
+        "You can't change your own role or suspension status - ask another admin",
+      );
     }
     const user = await this.prisma.user.update({ where: { id: userId }, data: dto });
     await this.redis.del(`user:${userId}`);
     this.audit.record({
       userId: adminId,
-      action: dto.role ? AuditAction.USER_ROLE_CHANGED : dto.isSuspended ? AuditAction.USER_SUSPENDED : AuditAction.USER_UPDATED,
+      action: dto.role
+        ? AuditAction.USER_ROLE_CHANGED
+        : dto.isSuspended
+          ? AuditAction.USER_SUSPENDED
+          : AuditAction.USER_UPDATED,
       entityType: 'User',
       entityId: userId,
       metadata: dto as Record<string, unknown>,
@@ -70,12 +87,22 @@ export class AdminService {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
     await this.prisma.user.delete({ where: { id: userId } });
-    this.audit.record({ userId: adminId, action: AuditAction.USER_DELETED, entityType: 'User', entityId: userId });
+    this.audit.record({
+      userId: adminId,
+      action: AuditAction.USER_DELETED,
+      entityType: 'User',
+      entityId: userId,
+    });
   }
 
   async listQrCodes(query: AdminListQrQueryDto) {
     const where: Prisma.QrCodeWhereInput = query.search
-      ? { OR: [{ name: { contains: query.search, mode: 'insensitive' } }, { shortCode: { contains: query.search, mode: 'insensitive' } }] }
+      ? {
+          OR: [
+            { name: { contains: query.search, mode: 'insensitive' } },
+            { shortCode: { contains: query.search, mode: 'insensitive' } },
+          ],
+        }
       : {};
     const [items, total] = await this.prisma.$transaction([
       this.prisma.qrCode.findMany({
@@ -94,7 +121,13 @@ export class AdminService {
     const qr = await this.prisma.qrCode.findUnique({ where: { id: qrCodeId } });
     if (!qr) throw new NotFoundException('QR code not found');
     await this.prisma.qrCode.delete({ where: { id: qrCodeId } });
-    this.audit.record({ userId: adminId, action: AuditAction.QR_DELETED, entityType: 'QrCode', entityId: qrCodeId, metadata: { admin: true } });
+    this.audit.record({
+      userId: adminId,
+      action: AuditAction.QR_DELETED,
+      entityType: 'QrCode',
+      entityId: qrCodeId,
+      metadata: { admin: true },
+    });
   }
 
   async stats() {
@@ -103,9 +136,18 @@ export class AdminService {
       this.prisma.qrCode.count(),
       this.prisma.scan.count(),
       this.prisma.qrCode.count({ where: { type: 'DYNAMIC' } }),
-      this.prisma.user.count({ where: { lastLoginAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } } }),
+      this.prisma.user.count({
+        where: { lastLoginAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+      }),
     ]);
-    return { totalUsers, totalQrCodes, totalStaticQrCodes: totalQrCodes - totalDynamic, totalDynamicQrCodes: totalDynamic, totalScans, activeUsersToday: activeToday };
+    return {
+      totalUsers,
+      totalQrCodes,
+      totalStaticQrCodes: totalQrCodes - totalDynamic,
+      totalDynamicQrCodes: totalDynamic,
+      totalScans,
+      activeUsersToday: activeToday,
+    };
   }
 
   getSettings() {
@@ -114,7 +156,11 @@ export class AdminService {
 
   async updateSettings(adminId: string, dto: AdminSettingsDto) {
     const updated = await this.settings.update(dto);
-    this.audit.record({ userId: adminId, action: AuditAction.ADMIN_SETTINGS_UPDATED, metadata: dto as Record<string, unknown> });
+    this.audit.record({
+      userId: adminId,
+      action: AuditAction.ADMIN_SETTINGS_UPDATED,
+      metadata: dto as Record<string, unknown>,
+    });
     return updated;
   }
 

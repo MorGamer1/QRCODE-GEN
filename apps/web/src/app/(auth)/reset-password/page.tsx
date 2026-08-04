@@ -14,7 +14,14 @@ import { useResetPassword } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { PasswordInput } from '@/components/auth/password-input';
 import { PasswordRequirements } from '@/components/auth/password-requirements';
 import { AuthCardSkeleton } from '@/components/auth/auth-card-skeleton';
@@ -51,7 +58,9 @@ function ResetPasswordForm() {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Invalid link</CardTitle>
-          <CardDescription>This password reset link is missing its token. Request a new one below.</CardDescription>
+          <CardDescription>
+            This password reset link is missing its token. Request a new one below.
+          </CardDescription>
         </CardHeader>
         <CardFooter>
           <Button variant="outline" className="w-full" asChild>
@@ -90,7 +99,12 @@ function ResetPasswordForm() {
           )}
           <div className="space-y-2">
             <Label htmlFor="password">New password</Label>
-            <PasswordInput id="password" autoComplete="new-password" disabled={resetPassword.isPending} {...register('password')} />
+            <PasswordInput
+              id="password"
+              autoComplete="new-password"
+              disabled={resetPassword.isPending}
+              {...register('password')}
+            />
             <PasswordRequirements value={passwordValue ?? ''} />
           </div>
           <div className="space-y-2">
@@ -101,7 +115,9 @@ function ResetPasswordForm() {
               disabled={resetPassword.isPending}
               {...register('confirmPassword')}
             />
-            {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>}
+            {errors.confirmPassword && (
+              <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
+            )}
           </div>
         </CardContent>
         <CardFooter>

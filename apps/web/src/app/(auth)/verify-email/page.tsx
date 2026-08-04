@@ -45,8 +45,18 @@ function VerifyEmailContent() {
   }
 
   if (verifyEmail.isError) {
-    const message = verifyEmail.error instanceof ApiError ? verifyEmail.error.message : 'This link is invalid or has expired.';
-    return <StatusCard icon={<XCircle className="h-6 w-6" />} title="Verification failed" description={message} tone="destructive" />;
+    const message =
+      verifyEmail.error instanceof ApiError
+        ? verifyEmail.error.message
+        : 'This link is invalid or has expired.';
+    return (
+      <StatusCard
+        icon={<XCircle className="h-6 w-6" />}
+        title="Verification failed"
+        description={message}
+        tone="destructive"
+      />
+    );
   }
 
   return (
@@ -70,11 +80,20 @@ function StatusCard({
   description: string;
   tone?: 'default' | 'success' | 'destructive';
 }) {
-  const toneClass = tone === 'success' ? 'bg-success/10 text-success' : tone === 'destructive' ? 'bg-destructive/10 text-destructive' : 'bg-primary/10 text-primary';
+  const toneClass =
+    tone === 'success'
+      ? 'bg-success/10 text-success'
+      : tone === 'destructive'
+        ? 'bg-destructive/10 text-destructive'
+        : 'bg-primary/10 text-primary';
   return (
     <Card>
       <CardHeader className="items-center text-center">
-        <div className={`mb-2 flex h-12 w-12 items-center justify-center rounded-full ${toneClass}`}>{icon}</div>
+        <div
+          className={`mb-2 flex h-12 w-12 items-center justify-center rounded-full ${toneClass}`}
+        >
+          {icon}
+        </div>
         <CardTitle className="text-2xl">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>

@@ -20,7 +20,9 @@ export class EmailService implements OnModuleInit {
   onModuleInit(): void {
     const host = this.config.get('SMTP_HOST', { infer: true });
     if (!host) {
-      this.logger.warn('SMTP_HOST not configured - emails will be logged instead of sent. See docs/DEPLOYMENT.md.');
+      this.logger.warn(
+        'SMTP_HOST not configured - emails will be logged instead of sent. See docs/DEPLOYMENT.md.',
+      );
       return;
     }
     this.transporter = createTransport({

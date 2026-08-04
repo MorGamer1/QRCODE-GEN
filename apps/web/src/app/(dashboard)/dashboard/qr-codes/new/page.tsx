@@ -5,7 +5,9 @@ export default function NewQrCodePage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Create a QR code</h1>
-        <p className="text-sm text-muted-foreground">Choose a content type, then style it to match your brand.</p>
+        <p className="text-sm text-muted-foreground">
+          Choose a content type, then style it to match your brand.
+        </p>
       </div>
       <QrWizard />
     </div>

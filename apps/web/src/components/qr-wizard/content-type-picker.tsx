@@ -12,7 +12,13 @@ const CATEGORY_LABELS: Record<ContentTypeMeta['category'], string> = {
   other: 'Other',
 };
 
-const CATEGORY_ORDER: ContentTypeMeta['category'][] = ['general', 'contact', 'business', 'media', 'other'];
+const CATEGORY_ORDER: ContentTypeMeta['category'][] = [
+  'general',
+  'contact',
+  'business',
+  'media',
+  'other',
+];
 
 function groupByCategory(): Record<ContentTypeMeta['category'], ContentTypeMeta[]> {
   const groups = { general: [], contact: [], business: [], media: [], other: [] } as Record<
@@ -50,13 +56,17 @@ export function ContentTypePicker({
                   onClick={() => onChange(meta.type)}
                   className={cn(
                     'flex flex-col items-start gap-2 rounded-lg border p-3 text-left transition-colors',
-                    active ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'hover:border-primary/40 hover:bg-accent/50',
+                    active
+                      ? 'border-primary bg-primary/5 ring-1 ring-primary'
+                      : 'hover:border-primary/40 hover:bg-accent/50',
                   )}
                 >
                   <span
                     className={cn(
                       'flex h-8 w-8 items-center justify-center rounded-md',
-                      active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
+                      active
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground',
                     )}
                   >
                     <Icon className="h-4 w-4" />

@@ -22,7 +22,11 @@ const DEFAULT_LOGO: LogoOptions = {
   excavate: true,
 };
 
-export function LogoEditor({ onPreviewLogoChange }: { onPreviewLogoChange: (dataUri: string | null) => void }) {
+export function LogoEditor({
+  onPreviewLogoChange,
+}: {
+  onPreviewLogoChange: (dataUri: string | null) => void;
+}) {
   const { control } = useFormContext();
 
   return (
@@ -76,10 +80,38 @@ export function LogoEditor({ onPreviewLogoChange }: { onPreviewLogoChange: (data
               }}
             />
 
-            <SliderField label="Size" value={logo.sizeRatio * 100} min={5} max={40} unit="%" onChange={(v) => update({ sizeRatio: v / 100 })} />
-            <SliderField label="Padding" value={logo.padding} min={0} max={30} unit="%" onChange={(v) => update({ padding: v })} />
-            <SliderField label="Corner rounding" value={logo.borderRadius} min={0} max={100} unit="%" onChange={(v) => update({ borderRadius: v })} />
-            <SliderField label="Rotation" value={logo.rotation} min={0} max={360} unit="°" onChange={(v) => update({ rotation: v })} />
+            <SliderField
+              label="Size"
+              value={logo.sizeRatio * 100}
+              min={5}
+              max={40}
+              unit="%"
+              onChange={(v) => update({ sizeRatio: v / 100 })}
+            />
+            <SliderField
+              label="Padding"
+              value={logo.padding}
+              min={0}
+              max={30}
+              unit="%"
+              onChange={(v) => update({ padding: v })}
+            />
+            <SliderField
+              label="Corner rounding"
+              value={logo.borderRadius}
+              min={0}
+              max={100}
+              unit="%"
+              onChange={(v) => update({ borderRadius: v })}
+            />
+            <SliderField
+              label="Rotation"
+              value={logo.rotation}
+              min={0}
+              max={360}
+              unit="°"
+              onChange={(v) => update({ rotation: v })}
+            />
 
             <div className="flex items-center justify-between gap-3">
               <Label htmlFor="logo-bg" className="text-sm font-normal">
@@ -89,19 +121,32 @@ export function LogoEditor({ onPreviewLogoChange }: { onPreviewLogoChange: (data
                 <Checkbox
                   id="logo-bg-transparent"
                   checked={logo.backgroundColor === null}
-                  onCheckedChange={(checked) => update({ backgroundColor: checked ? null : '#FFFFFF' })}
+                  onCheckedChange={(checked) =>
+                    update({ backgroundColor: checked ? null : '#FFFFFF' })
+                  }
                 />
-                <Label htmlFor="logo-bg-transparent" className="text-xs font-normal text-muted-foreground">
+                <Label
+                  htmlFor="logo-bg-transparent"
+                  className="text-xs font-normal text-muted-foreground"
+                >
                   Transparent
                 </Label>
               </div>
             </div>
             {logo.backgroundColor !== null && (
-              <ColorInput id="logo-bg" value={logo.backgroundColor} onChange={(color) => update({ backgroundColor: color })} />
+              <ColorInput
+                id="logo-bg"
+                value={logo.backgroundColor}
+                onChange={(color) => update({ backgroundColor: color })}
+              />
             )}
 
             <div className="flex items-center gap-2">
-              <Checkbox id="logo-excavate" checked={logo.excavate} onCheckedChange={(checked) => update({ excavate: Boolean(checked) })} />
+              <Checkbox
+                id="logo-excavate"
+                checked={logo.excavate}
+                onCheckedChange={(checked) => update({ excavate: Boolean(checked) })}
+              />
               <Label htmlFor="logo-excavate" className="text-sm font-normal">
                 Remove QR modules behind the logo
               </Label>

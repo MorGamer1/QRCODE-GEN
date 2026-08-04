@@ -1,4 +1,10 @@
-import { ErrorCorrectionLevel, EyeBallShape, EyeFrameShape, GradientType, ModuleShape } from '../enums';
+import {
+  ErrorCorrectionLevel,
+  EyeBallShape,
+  EyeFrameShape,
+  GradientType,
+  ModuleShape,
+} from '../enums';
 import type { QrDesign } from './schema';
 
 export interface QrDesignPreset {

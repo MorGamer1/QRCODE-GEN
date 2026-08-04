@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   CreateBucketCommand,
@@ -69,7 +75,13 @@ export class FilesService implements OnModuleInit {
     originalName: string,
     buffer: Buffer,
     purpose: FileUploadPurpose,
-  ): Promise<{ id: string; url: string; mimeType: string; sizeBytes: number; originalName: string }> {
+  ): Promise<{
+    id: string;
+    url: string;
+    mimeType: string;
+    sizeBytes: number;
+    originalName: string;
+  }> {
     const mimeType = await detectMimeType(buffer);
 
     const allowed = purpose === 'logo' ? ALLOWED_LOGO_MIME_TYPES : ALLOWED_FILE_MIME_TYPES;
@@ -79,7 +91,9 @@ export class FilesService implements OnModuleInit {
       throw new BadRequestException(`Unsupported file type: ${mimeType}`);
     }
     if (buffer.byteLength > maxSize) {
-      throw new BadRequestException(`File exceeds the ${Math.round(maxSize / 1024 / 1024)}MB limit`);
+      throw new BadRequestException(
+        `File exceeds the ${Math.round(maxSize / 1024 / 1024)}MB limit`,
+      );
     }
 
     let finalBuffer = buffer;
@@ -98,7 +112,12 @@ export class FilesService implements OnModuleInit {
     const key = `${userId}/${randomUUID()}.${extension}`;
 
     await this.client.send(
-      new PutObjectCommand({ Bucket: this.bucket, Key: key, Body: finalBuffer, ContentType: finalMime }),
+      new PutObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+        Body: finalBuffer,
+        ContentType: finalMime,
+      }),
     );
 
     const file = await this.prisma.fileAsset.create({
@@ -126,7 +145,9 @@ export class FilesService implements OnModuleInit {
     const file = await this.prisma.fileAsset.findUnique({ where: { id: fileId } });
     if (!file || (userId && file.userId !== userId)) throw new NotFoundException('File not found');
 
-    const response = await this.client.send(new GetObjectCommand({ Bucket: this.bucket, Key: file.key }));
+    const response = await this.client.send(
+      new GetObjectCommand({ Bucket: this.bucket, Key: file.key }),
+    );
     const buffer = Buffer.from(await response.Body!.transformToByteArray());
     return { buffer, mimeType: file.mimeType };
   }
@@ -139,7 +160,10 @@ export class FilesService implements OnModuleInit {
   }
 
   async listForUser(userId: string) {
-    const files = await this.prisma.fileAsset.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } });
+    const files = await this.prisma.fileAsset.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+    });
     return Promise.all(files.map(async (f) => ({ ...f, url: await this.resolveUrl(f.key) })));
   }
 }

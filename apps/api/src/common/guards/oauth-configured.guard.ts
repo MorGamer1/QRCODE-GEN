@@ -1,4 +1,10 @@
-import { CanActivate, ExecutionContext, Injectable, NotImplementedException, mixin } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  NotImplementedException,
+  mixin,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { EnvSchema } from '../config/env.validation';
 
@@ -7,7 +13,9 @@ import type { EnvSchema } from '../config/env.validation';
  * confusing passport error when the operator hasn't configured that
  * provider's client id/secret - OAuth is optional for a self-hosted deploy.
  */
-export function OAuthConfiguredGuard(provider: 'google' | 'github'): new (...args: never[]) => CanActivate {
+export function OAuthConfiguredGuard(
+  provider: 'google' | 'github',
+): new (...args: never[]) => CanActivate {
   @Injectable()
   class OAuthConfiguredGuardMixin implements CanActivate {
     constructor(private readonly config: ConfigService<EnvSchema, true>) {}

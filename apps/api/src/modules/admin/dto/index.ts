@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { adminListUsersQuerySchema, adminSettingsSchema, adminUpdateUserSchema, paginationQuerySchema } from '@qrgen/shared';
+import {
+  adminListUsersQuerySchema,
+  adminSettingsSchema,
+  adminUpdateUserSchema,
+  paginationQuerySchema,
+} from '@qrgen/shared';
 
 export class AdminListUsersQueryDto extends createZodDto(adminListUsersQuerySchema) {}
 export class AdminUpdateUserDto extends createZodDto(adminUpdateUserSchema) {}

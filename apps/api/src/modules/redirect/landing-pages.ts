@@ -1,7 +1,4 @@
-import type {
-  ContentPayloadMap,
-  ContentType as ContentTypeT,
-} from '@qrgen/shared';
+import type { ContentPayloadMap, ContentType as ContentTypeT } from '@qrgen/shared';
 
 /** Escapes untrusted content before interpolating into an HTML template literal. */
 export function escapeHtml(value: unknown): string {
@@ -87,10 +84,17 @@ export function passwordPromptPage(actionUrl: string, error?: string): string {
 }
 
 export function textPage(name: string, data: ContentPayloadMap[ContentTypeT.TEXT]): string {
-  return pageShell(name, `<h1>${escapeHtml(name)}</h1><p style="white-space:pre-wrap;">${escapeHtml(data.text)}</p>`);
+  return pageShell(
+    name,
+    `<h1>${escapeHtml(name)}</h1><p style="white-space:pre-wrap;">${escapeHtml(data.text)}</p>`,
+  );
 }
 
-export function wifiPage(name: string, data: ContentPayloadMap[ContentTypeT.WIFI], miniQrDataUri: string): string {
+export function wifiPage(
+  name: string,
+  data: ContentPayloadMap[ContentTypeT.WIFI],
+  miniQrDataUri: string,
+): string {
   return pageShell(
     name,
     `<div class="icon">📶</div>
@@ -106,7 +110,11 @@ export function wifiPage(name: string, data: ContentPayloadMap[ContentTypeT.WIFI
   );
 }
 
-export function vcardPage(name: string, data: ContentPayloadMap[ContentTypeT.VCARD], downloadUrl: string): string {
+export function vcardPage(
+  name: string,
+  data: ContentPayloadMap[ContentTypeT.VCARD],
+  downloadUrl: string,
+): string {
   const fullName = [data.firstName, data.lastName].filter(Boolean).join(' ');
   return pageShell(
     name,
@@ -131,7 +139,11 @@ export function locationPage(name: string, data: ContentPayloadMap[ContentTypeT.
   );
 }
 
-export function eventPage(name: string, data: ContentPayloadMap[ContentTypeT.EVENT], icsUrl: string): string {
+export function eventPage(
+  name: string,
+  data: ContentPayloadMap[ContentTypeT.EVENT],
+  icsUrl: string,
+): string {
   return pageShell(
     name,
     `<div class="icon">📅</div>
@@ -166,7 +178,10 @@ export function socialPage(name: string, data: ContentPayloadMap[ContentTypeT.SO
 export function customPage(name: string, data: ContentPayloadMap[ContentTypeT.CUSTOM]): string {
   const fields = data.fields
     ? Object.entries(data.fields)
-        .map(([k, v]) => `<div class="field"><label>${escapeHtml(k)}</label><div class="value">${escapeHtml(v)}</div></div>`)
+        .map(
+          ([k, v]) =>
+            `<div class="field"><label>${escapeHtml(k)}</label><div class="value">${escapeHtml(v)}</div></div>`,
+        )
         .join('')
     : '';
   return pageShell(

@@ -12,7 +12,13 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export default function AdminSettingsPage() {
   const { data: settings, isPending } = useAdminSettings();
@@ -61,7 +67,8 @@ export default function AdminSettingsPage() {
       },
       {
         onSuccess: () => toast.success('Settings saved'),
-        onError: (err) => toast.error(err instanceof ApiError ? err.message : 'Failed to save settings'),
+        onError: (err) =>
+          toast.error(err instanceof ApiError ? err.message : 'Failed to save settings'),
       },
     );
   };
@@ -133,15 +140,23 @@ export default function AdminSettingsPage() {
             <Label>Default redirect type</Label>
             <Select
               value={String(form.defaultRedirectStatusCode)}
-              onValueChange={(v) => setForm({ ...form, defaultRedirectStatusCode: Number(v) as RedirectStatusCode })}
+              onValueChange={(v) =>
+                setForm({ ...form, defaultRedirectStatusCode: Number(v) as RedirectStatusCode })
+              }
             >
               <SelectTrigger className="max-w-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={String(RedirectStatusCode.FOUND)}>302 - Found (temporary)</SelectItem>
-                <SelectItem value={String(RedirectStatusCode.MOVED_PERMANENTLY)}>301 - Moved permanently</SelectItem>
-                <SelectItem value={String(RedirectStatusCode.TEMPORARY_REDIRECT)}>307 - Temporary redirect (strict)</SelectItem>
+                <SelectItem value={String(RedirectStatusCode.FOUND)}>
+                  302 - Found (temporary)
+                </SelectItem>
+                <SelectItem value={String(RedirectStatusCode.MOVED_PERMANENTLY)}>
+                  301 - Moved permanently
+                </SelectItem>
+                <SelectItem value={String(RedirectStatusCode.TEMPORARY_REDIRECT)}>
+                  307 - Temporary redirect (strict)
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>

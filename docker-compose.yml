@@ -69,7 +69,7 @@ services:
     volumes:
       - ./infra/data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-qrgen} -d ${POSTGRES_DB:-qrgen}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-qrgen} -d ${POSTGRES_DB:-qrgen}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -84,7 +84,7 @@ services:
     volumes:
       - ./infra/data/redis:/data
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli -a ${REDIS_PASSWORD} ping | grep -q PONG"]
+      test: ['CMD-SHELL', 'redis-cli -a ${REDIS_PASSWORD} ping | grep -q PONG']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -101,7 +101,7 @@ services:
     volumes:
       - ./infra/data/minio:/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -120,7 +120,7 @@ services:
   minio-init:
     image: minio/mc:RELEASE.2024-12-18T13-15-44Z
     <<: [*security-opts]
-    restart: "no"
+    restart: 'no'
     depends_on:
       minio:
         condition: service_healthy
@@ -142,13 +142,13 @@ services:
       dockerfile: apps/api/Dockerfile
       target: build
     <<: [*security-opts]
-    restart: "no"
+    restart: 'no'
     depends_on:
       postgres:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-qrgen}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-qrgen}
-    command: ["pnpm", "--filter=@qrgen/api", "exec", "prisma", "migrate", "deploy"]
+    command: ['pnpm', '--filter=@qrgen/api', 'exec', 'prisma', 'migrate', 'deploy']
     networks: [qrgen]
 
   api:
@@ -178,7 +178,7 @@ services:
       dockerfile: apps/api/Dockerfile
       target: runtime
     <<: [*restart-policy, *security-opts]
-    command: ["node", "dist/worker.js"]
+    command: ['node', 'dist/worker.js']
     depends_on:
       postgres:
         condition: service_healthy
@@ -205,7 +205,7 @@ services:
     image: nginx:1.27-alpine
     <<: [*restart-policy, *security-opts]
     ports:
-      - "${NGINX_HTTP_PORT:-80}:80"
+      - '${NGINX_HTTP_PORT:-80}:80'
     volumes:
       - ./infra/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./infra/docker/nginx/proxy-common.conf:/etc/nginx/proxy-common.conf:ro

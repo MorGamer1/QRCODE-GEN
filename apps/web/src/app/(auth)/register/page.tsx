@@ -15,7 +15,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { PasswordInput } from '@/components/auth/password-input';
 import { PasswordRequirements } from '@/components/auth/password-requirements';
 import { OAuthButtons } from '@/components/auth/oauth-buttons';
@@ -72,8 +79,9 @@ export default function RegisterPage() {
           </div>
           <CardTitle className="text-2xl">Check your inbox</CardTitle>
           <CardDescription>
-            We sent a verification link to <span className="font-medium text-foreground">{verificationEmail}</span>.
-            Follow it to activate your account, then sign in.
+            We sent a verification link to{' '}
+            <span className="font-medium text-foreground">{verificationEmail}</span>. Follow it to
+            activate your account, then sign in.
           </CardDescription>
         </CardHeader>
         <CardFooter>
@@ -90,7 +98,10 @@ export default function RegisterPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Registration closed</CardTitle>
-          <CardDescription>This server isn&apos;t accepting new accounts right now. Ask an administrator for an invite.</CardDescription>
+          <CardDescription>
+            This server isn&apos;t accepting new accounts right now. Ask an administrator for an
+            invite.
+          </CardDescription>
         </CardHeader>
         <CardFooter>
           <Button variant="outline" className="w-full" asChild>
@@ -118,7 +129,13 @@ export default function RegisterPage() {
 
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" autoComplete="name" placeholder="Jane Doe" disabled={register.isPending} {...registerField('name')} />
+            <Input
+              id="name"
+              autoComplete="name"
+              placeholder="Jane Doe"
+              disabled={register.isPending}
+              {...registerField('name')}
+            />
             {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
           </div>
           <div className="space-y-2">
@@ -135,7 +152,12 @@ export default function RegisterPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <PasswordInput id="password" autoComplete="new-password" disabled={register.isPending} {...registerField('password')} />
+            <PasswordInput
+              id="password"
+              autoComplete="new-password"
+              disabled={register.isPending}
+              {...registerField('password')}
+            />
             <PasswordRequirements value={passwordValue ?? ''} />
           </div>
           <div className="space-y-2">
@@ -146,7 +168,9 @@ export default function RegisterPage() {
               disabled={register.isPending}
               {...registerField('confirmPassword')}
             />
-            {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>}
+            {errors.confirmPassword && (
+              <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
+            )}
           </div>
 
           <OAuthButtons />

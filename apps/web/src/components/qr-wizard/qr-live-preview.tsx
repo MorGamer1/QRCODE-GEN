@@ -41,7 +41,11 @@ export function QrLivePreview({ text, design, logoDataUri, className }: QrLivePr
       )}
       style={
         isTransparent
-          ? { backgroundImage: TRANSPARENT_CHECKERBOARD, backgroundSize: '16px 16px', backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px' }
+          ? {
+              backgroundImage: TRANSPARENT_CHECKERBOARD,
+              backgroundSize: '16px 16px',
+              backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px',
+            }
           : undefined
       }
     >

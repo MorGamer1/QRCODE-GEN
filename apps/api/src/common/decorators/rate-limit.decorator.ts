@@ -12,4 +12,5 @@ export const RateLimit = (options: RateLimitOptions): MethodDecorator & ClassDec
   SetMetadata(RATE_LIMIT_KEY, options);
 
 export const SKIP_RATE_LIMIT_KEY = 'skip_rate_limit';
-export const SkipRateLimit = (): MethodDecorator & ClassDecorator => SetMetadata(SKIP_RATE_LIMIT_KEY, true);
+export const SkipRateLimit = (): MethodDecorator & ClassDecorator =>
+  SetMetadata(SKIP_RATE_LIMIT_KEY, true);

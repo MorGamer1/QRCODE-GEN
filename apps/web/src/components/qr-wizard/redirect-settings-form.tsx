@@ -10,7 +10,13 @@ import type { QrCode } from '@/lib/qr-types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toDatetimeLocalValue, toIsoString } from './content-fields/shared';
 import { Loader2 } from 'lucide-react';
@@ -50,7 +56,11 @@ export function RedirectSettingsForm({ qr }: { qr: QrCode }) {
       activateAt: values.activateAt ? toIsoString(values.activateAt) : null,
       deactivateAt: values.deactivateAt ? toIsoString(values.deactivateAt) : null,
       expiresAt: values.expiresAt ? toIsoString(values.expiresAt) : null,
-      ...(values.removePassword ? { password: null } : values.changePassword && values.password ? { password: values.password } : {}),
+      ...(values.removePassword
+        ? { password: null }
+        : values.changePassword && values.password
+          ? { password: values.password }
+          : {}),
     };
     try {
       await updateSettings.mutateAsync(dto);
@@ -66,8 +76,8 @@ export function RedirectSettingsForm({ qr }: { qr: QrCode }) {
       <CardHeader>
         <CardTitle>Redirect settings</CardTitle>
         <CardDescription>
-          These control where and how this QR code&apos;s short link behaves. They apply instantly - the printed QR
-          image never needs to change.
+          These control where and how this QR code&apos;s short link behaves. They apply instantly -
+          the printed QR image never needs to change.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -83,15 +93,27 @@ export function RedirectSettingsForm({ qr }: { qr: QrCode }) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={String(RedirectStatusCode.FOUND)}>302 - Found (temporary)</SelectItem>
-                  <SelectItem value={String(RedirectStatusCode.MOVED_PERMANENTLY)}>301 - Moved permanently</SelectItem>
-                  <SelectItem value={String(RedirectStatusCode.TEMPORARY_REDIRECT)}>307 - Temporary redirect (strict)</SelectItem>
+                  <SelectItem value={String(RedirectStatusCode.FOUND)}>
+                    302 - Found (temporary)
+                  </SelectItem>
+                  <SelectItem value={String(RedirectStatusCode.MOVED_PERMANENTLY)}>
+                    301 - Moved permanently
+                  </SelectItem>
+                  <SelectItem value={String(RedirectStatusCode.TEMPORARY_REDIRECT)}>
+                    307 - Temporary redirect (strict)
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="rs-scanLimit">Scan limit</Label>
-              <Input id="rs-scanLimit" type="number" min={1} placeholder="Unlimited" {...register('scanLimit')} />
+              <Input
+                id="rs-scanLimit"
+                type="number"
+                min={1}
+                placeholder="Unlimited"
+                {...register('scanLimit')}
+              />
             </div>
           </div>
 
@@ -113,11 +135,18 @@ export function RedirectSettingsForm({ qr }: { qr: QrCode }) {
           <div className="space-y-2 rounded-lg border p-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Password protection</span>
-              <span className="text-xs text-muted-foreground">{qr.hasPassword ? 'Currently enabled' : 'Currently disabled'}</span>
+              <span className="text-xs text-muted-foreground">
+                {qr.hasPassword ? 'Currently enabled' : 'Currently disabled'}
+              </span>
             </div>
             {qr.hasPassword && !changePassword && (
               <div className="flex gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => setValue('changePassword', true)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setValue('changePassword', true)}
+                >
                   Change password
                 </Button>
                 <Button
@@ -134,14 +163,28 @@ export function RedirectSettingsForm({ qr }: { qr: QrCode }) {
               </div>
             )}
             {!qr.hasPassword && !changePassword && (
-              <Button type="button" variant="outline" size="sm" onClick={() => setValue('changePassword', true)}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setValue('changePassword', true)}
+              >
                 Set a password
               </Button>
             )}
             {changePassword && (
               <div className="flex items-center gap-2">
-                <Input type="password" placeholder="New password (min 4 characters)" {...register('password')} />
-                <Button type="button" variant="ghost" size="sm" onClick={() => setValue('changePassword', false)}>
+                <Input
+                  type="password"
+                  placeholder="New password (min 4 characters)"
+                  {...register('password')}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setValue('changePassword', false)}
+                >
                   Cancel
                 </Button>
               </div>
@@ -149,7 +192,11 @@ export function RedirectSettingsForm({ qr }: { qr: QrCode }) {
             {watch('removePassword') && (
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>Password will be removed when you save.</span>
-                <button type="button" className="font-medium text-primary hover:underline" onClick={() => setValue('removePassword', false)}>
+                <button
+                  type="button"
+                  className="font-medium text-primary hover:underline"
+                  onClick={() => setValue('removePassword', false)}
+                >
                   Undo
                 </button>
               </div>

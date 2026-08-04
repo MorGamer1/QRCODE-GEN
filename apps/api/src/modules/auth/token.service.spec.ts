@@ -66,7 +66,10 @@ describe('TokenService', () => {
   describe('issueSession', () => {
     it('persists a session hashed (not raw) refresh token', async () => {
       const { service, prisma } = buildService();
-      const result = await service.issueSession(user, { userAgent: 'jest', ipAddress: '127.0.0.1' });
+      const result = await service.issueSession(user, {
+        userAgent: 'jest',
+        ipAddress: '127.0.0.1',
+      });
 
       expect(prisma.session.create).toHaveBeenCalledTimes(1);
       const createArgs = prisma.session.create.mock.calls[0][0];

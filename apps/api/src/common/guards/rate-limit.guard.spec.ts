@@ -2,10 +2,12 @@ import { ExecutionContext, HttpException } from '@nestjs/common';
 import { RateLimitGuard } from './rate-limit.guard';
 
 describe('RateLimitGuard', () => {
-  function buildContext(opts: {
-    type?: string;
-    request?: Record<string, unknown>;
-  } = {}): ExecutionContext {
+  function buildContext(
+    opts: {
+      type?: string;
+      request?: Record<string, unknown>;
+    } = {},
+  ): ExecutionContext {
     const request = opts.request ?? { ip: '127.0.0.1' };
     return {
       getType: () => opts.type ?? 'http',
@@ -20,7 +22,9 @@ describe('RateLimitGuard', () => {
     } as unknown as ExecutionContext;
   }
 
-  function buildGuard(overrides: { skip?: boolean; options?: { limit: number; ttlSeconds: number } } = {}) {
+  function buildGuard(
+    overrides: { skip?: boolean; options?: { limit: number; ttlSeconds: number } } = {},
+  ) {
     const reflector = {
       getAllAndOverride: jest.fn((key: string) => {
         if (key === 'skip_rate_limit') return overrides.skip;
@@ -67,7 +71,9 @@ describe('RateLimitGuard', () => {
   it('keys by authenticated user id rather than IP when both are present', async () => {
     const { guard, redis } = buildGuard({ options: { limit: 5, ttlSeconds: 60 } });
     redis.incrWithExpiry.mockResolvedValue(1);
-    await guard.canActivate(buildContext({ request: { ip: '127.0.0.1', user: { id: 'user-42' } } }));
+    await guard.canActivate(
+      buildContext({ request: { ip: '127.0.0.1', user: { id: 'user-42' } } }),
+    );
     const [key] = redis.incrWithExpiry.mock.calls[0];
     expect(key).toContain('user-42');
     expect(key).not.toContain('127.0.0.1');

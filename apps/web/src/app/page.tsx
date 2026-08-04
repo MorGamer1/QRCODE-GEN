@@ -25,32 +25,38 @@ const FEATURES = [
   {
     icon: QrCode,
     title: '16 content types',
-    description: 'URLs, Wi-Fi, vCards, crypto wallets, app store links, events, and more - all in one generator.',
+    description:
+      'URLs, Wi-Fi, vCards, crypto wallets, app store links, events, and more - all in one generator.',
   },
   {
     icon: Zap,
     title: 'Static & dynamic codes',
-    description: 'Dynamic codes redirect through a short link you can retarget instantly, without reprinting a thing.',
+    description:
+      'Dynamic codes redirect through a short link you can retarget instantly, without reprinting a thing.',
   },
   {
     icon: Palette,
     title: 'Full visual control',
-    description: 'Module shapes, eye styles, gradients, logos, and frames - exported as PNG, SVG, PDF, EPS, or WebP.',
+    description:
+      'Module shapes, eye styles, gradients, logos, and frames - exported as PNG, SVG, PDF, EPS, or WebP.',
   },
   {
     icon: BarChart3,
     title: 'Real-time analytics',
-    description: 'Scans by device, browser, location, and time, with heatmaps, geo maps, and CSV/JSON export.',
+    description:
+      'Scans by device, browser, location, and time, with heatmaps, geo maps, and CSV/JSON export.',
   },
   {
     icon: Shield,
     title: 'Built-in security',
-    description: 'Rate limiting, 2FA, audit logs, password-protected codes, and scan limits out of the box.',
+    description:
+      'Rate limiting, 2FA, audit logs, password-protected codes, and scan limits out of the box.',
   },
   {
     icon: Lock,
     title: 'Self-hosted & open',
-    description: 'Your data stays on your infrastructure. One Docker Compose command to run the whole stack.',
+    description:
+      'Your data stays on your infrastructure. One Docker Compose command to run the whole stack.',
   },
 ];
 
@@ -112,11 +118,13 @@ export default function LandingPage() {
               Open-source & self-hosted
             </div>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              QR codes, <span className="text-primary">styled</span> and <span className="text-primary">tracked</span>
+              QR codes, <span className="text-primary">styled</span> and{' '}
+              <span className="text-primary">tracked</span>
             </h1>
             <p className="max-w-xl text-lg text-muted-foreground">
-              Generate static and dynamic QR codes for anything - URLs, Wi-Fi, vCards, payments, and more. Customize
-              every pixel, then track every scan in real time. Run it all on your own infrastructure.
+              Generate static and dynamic QR codes for anything - URLs, Wi-Fi, vCards, payments, and
+              more. Customize every pixel, then track every scan in real time. Run it all on your
+              own infrastructure.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button size="lg" asChild>
@@ -153,9 +161,12 @@ export default function LandingPage() {
         <section id="features" className="border-t bg-muted/30 py-16 md:py-24">
           <div className="container">
             <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Everything a commercial QR platform has</h2>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                Everything a commercial QR platform has
+              </h2>
               <p className="mt-4 text-muted-foreground">
-                Without the recurring bill, the vendor lock-in, or your visitors&apos; data leaving your servers.
+                Without the recurring bill, the vendor lock-in, or your visitors&apos; data leaving
+                your servers.
               </p>
             </div>
             <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -177,8 +188,12 @@ export default function LandingPage() {
         <section id="content-types" className="py-16 md:py-24">
           <div className="container">
             <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">One generator, sixteen content types</h2>
-              <p className="mt-4 text-muted-foreground">Pick a type, fill in the details, and QRGen builds the payload for you.</p>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                One generator, sixteen content types
+              </h2>
+              <p className="mt-4 text-muted-foreground">
+                Pick a type, fill in the details, and QRGen builds the payload for you.
+              </p>
             </div>
             <div className="mx-auto mt-10 flex max-w-3xl flex-wrap justify-center gap-2">
               {CONTENT_TYPES.map((type) => (
@@ -202,8 +217,9 @@ export default function LandingPage() {
                 </div>
                 <CardTitle className="text-2xl">Your infrastructure, your data</CardTitle>
                 <CardDescription className="max-w-lg">
-                  QRGen ships as a Docker Compose stack: web app, API, PostgreSQL, Redis, and a reverse proxy. No
-                  external services required, no usage caps, no analytics shared with a third party.
+                  QRGen ships as a Docker Compose stack: web app, API, PostgreSQL, Redis, and a
+                  reverse proxy. No external services required, no usage caps, no analytics shared
+                  with a third party.
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex justify-center">

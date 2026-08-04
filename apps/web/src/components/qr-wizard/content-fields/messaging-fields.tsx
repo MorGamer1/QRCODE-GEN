@@ -11,19 +11,42 @@ export function EmailFields({ prefix }: { prefix: string }) {
   return (
     <div className="space-y-4">
       <Field id="c-to" label="Recipient email" error={getFieldError(errors, `${prefix}.to`)}>
-        <Input id="c-to" type="email" placeholder="hello@example.com" {...register(`${prefix}.to`)} />
+        <Input
+          id="c-to"
+          type="email"
+          placeholder="hello@example.com"
+          {...register(`${prefix}.to`)}
+        />
       </Field>
-      <Field id="c-subject" label="Subject" optional error={getFieldError(errors, `${prefix}.subject`)}>
+      <Field
+        id="c-subject"
+        label="Subject"
+        optional
+        error={getFieldError(errors, `${prefix}.subject`)}
+      >
         <Input id="c-subject" placeholder="Subject line" {...register(`${prefix}.subject`)} />
       </Field>
       <Field id="c-body" label="Message" optional error={getFieldError(errors, `${prefix}.body`)}>
-        <Textarea id="c-body" rows={4} placeholder="Pre-filled message body" {...register(`${prefix}.body`)} />
+        <Textarea
+          id="c-body"
+          rows={4}
+          placeholder="Pre-filled message body"
+          {...register(`${prefix}.body`)}
+        />
       </Field>
     </div>
   );
 }
 
-function PhoneAndMessage({ prefix, messageLabel, messageMax }: { prefix: string; messageLabel: string; messageMax: number }) {
+function PhoneAndMessage({
+  prefix,
+  messageLabel,
+  messageMax,
+}: {
+  prefix: string;
+  messageLabel: string;
+  messageMax: number;
+}) {
   const { register, formState } = useFormContext();
   const { errors } = formState;
   return (
@@ -34,7 +57,12 @@ function PhoneAndMessage({ prefix, messageLabel, messageMax }: { prefix: string;
         hint="Use international format, e.g. +14155551234"
         error={getFieldError(errors, `${prefix}.phone`)}
       >
-        <Input id="c-phone" type="tel" placeholder="+14155551234" {...register(`${prefix}.phone`)} />
+        <Input
+          id="c-phone"
+          type="tel"
+          placeholder="+14155551234"
+          {...register(`${prefix}.phone`)}
+        />
       </Field>
       <Field
         id="c-message"

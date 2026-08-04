@@ -34,7 +34,9 @@ export function UserNav({ user }: { user: AuthUser }) {
         >
           <Avatar>
             {user.avatarUrl && <AvatarImage src={user.avatarUrl} alt={user.name} />}
-            <AvatarFallback>{initials(user.name) || <UserIcon className="h-4 w-4" />}</AvatarFallback>
+            <AvatarFallback>
+              {initials(user.name) || <UserIcon className="h-4 w-4" />}
+            </AvatarFallback>
           </Avatar>
         </button>
       </DropdownMenuTrigger>

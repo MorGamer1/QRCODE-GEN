@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CurrentUser, type RequestUser } from '../../common/decorators/current-user.decorator';
 import { RedirectRulesService } from './redirect-rules.service';
@@ -15,7 +25,11 @@ export class RedirectRulesController {
   }
 
   @Post()
-  create(@CurrentUser() user: RequestUser, @Param('qrCodeId') qrCodeId: string, @Body() dto: CreateRedirectRuleDto) {
+  create(
+    @CurrentUser() user: RequestUser,
+    @Param('qrCodeId') qrCodeId: string,
+    @Body() dto: CreateRedirectRuleDto,
+  ) {
     return this.rulesService.create(user.id, qrCodeId, dto);
   }
 

@@ -2,13 +2,19 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import type { Queue } from 'bullmq';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { RedirectCacheService, type CachedRedirectEntry } from '../../common/redirect-cache/redirect-cache.service';
+import {
+  RedirectCacheService,
+  type CachedRedirectEntry,
+} from '../../common/redirect-cache/redirect-cache.service';
 import { PasswordService } from '../auth/password.service';
 import { SCAN_EVENTS_QUEUE, type ScanEventJob } from '../../common/queue/queue.constants';
 
 export type AvailabilityResult =
   | { ok: true }
-  | { ok: false; reason: 'not-found' | 'expired' | 'not-yet-active' | 'deactivated' | 'scan-limit' };
+  | {
+      ok: false;
+      reason: 'not-found' | 'expired' | 'not-yet-active' | 'deactivated' | 'scan-limit';
+    };
 
 @Injectable()
 export class RedirectService {
@@ -38,9 +44,12 @@ export class RedirectService {
   checkAvailability(entry: CachedRedirectEntry): AvailabilityResult {
     const now = new Date();
     if (entry.expiresAt && new Date(entry.expiresAt) < now) return { ok: false, reason: 'expired' };
-    if (entry.activateAt && new Date(entry.activateAt) > now) return { ok: false, reason: 'not-yet-active' };
-    if (entry.deactivateAt && new Date(entry.deactivateAt) < now) return { ok: false, reason: 'deactivated' };
-    if (entry.scanLimit !== null && entry.totalScans >= entry.scanLimit) return { ok: false, reason: 'scan-limit' };
+    if (entry.activateAt && new Date(entry.activateAt) > now)
+      return { ok: false, reason: 'not-yet-active' };
+    if (entry.deactivateAt && new Date(entry.deactivateAt) < now)
+      return { ok: false, reason: 'deactivated' };
+    if (entry.scanLimit !== null && entry.totalScans >= entry.scanLimit)
+      return { ok: false, reason: 'scan-limit' };
     return { ok: true };
   }
 

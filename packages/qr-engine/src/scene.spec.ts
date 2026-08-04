@@ -18,7 +18,10 @@ describe('buildQrScene', () => {
   });
 
   it('keeps the requested error correction level when there is no logo', () => {
-    const scene = buildQrScene(TEXT, parseQrDesign({ errorCorrectionLevel: ErrorCorrectionLevel.L }));
+    const scene = buildQrScene(
+      TEXT,
+      parseQrDesign({ errorCorrectionLevel: ErrorCorrectionLevel.L }),
+    );
     expect(scene.effectiveErrorCorrectionLevel).toBe(ErrorCorrectionLevel.L);
   });
 
@@ -76,7 +79,10 @@ describe('buildQrScene', () => {
   });
 
   it('grows both dimensions equally for a border-only frame (still square)', () => {
-    const scene = buildQrScene(TEXT, parseQrDesign({ frame: { style: FrameStyle.ROUNDED_BORDER } }));
+    const scene = buildQrScene(
+      TEXT,
+      parseQrDesign({ frame: { style: FrameStyle.ROUNDED_BORDER } }),
+    );
     expect(scene.width).toBe(scene.height);
     expect(scene.width).toBeGreaterThan(1024);
   });

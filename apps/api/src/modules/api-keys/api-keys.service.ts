@@ -35,7 +35,12 @@ export class ApiKeysService {
       },
     });
 
-    this.audit.record({ userId, action: AuditAction.API_KEY_CREATED, entityType: 'ApiKey', entityId: record.id });
+    this.audit.record({
+      userId,
+      action: AuditAction.API_KEY_CREATED,
+      entityType: 'ApiKey',
+      entityId: record.id,
+    });
 
     // The only time the raw key is ever available - callers must store it now.
     return { ...record, key: rawKey };
@@ -62,7 +67,12 @@ export class ApiKeysService {
     const key = await this.prisma.apiKey.findFirst({ where: { id, userId } });
     if (!key) throw new NotFoundException('API key not found');
     await this.prisma.apiKey.update({ where: { id }, data: { revokedAt: new Date() } });
-    this.audit.record({ userId, action: AuditAction.API_KEY_REVOKED, entityType: 'ApiKey', entityId: id });
+    this.audit.record({
+      userId,
+      action: AuditAction.API_KEY_REVOKED,
+      entityType: 'ApiKey',
+      entityId: id,
+    });
   }
 
   /** Used by ApiKeyGuard on every authenticated request presenting X-API-Key - keep this fast. */
@@ -77,7 +87,9 @@ export class ApiKeysService {
     if (record.expiresAt && record.expiresAt < new Date()) return null;
 
     // Fire-and-forget - never let usage tracking add latency to the calling request.
-    void this.prisma.apiKey.update({ where: { id: record.id }, data: { lastUsedAt: new Date() } }).catch(() => undefined);
+    void this.prisma.apiKey
+      .update({ where: { id: record.id }, data: { lastUsedAt: new Date() } })
+      .catch(() => undefined);
 
     return {
       id: record.user.id,

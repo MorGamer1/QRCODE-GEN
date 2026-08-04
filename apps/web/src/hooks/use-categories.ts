@@ -20,7 +20,9 @@ export function useCreateCategory() {
   return useMutation({
     mutationFn: (dto: CreateCategoryDto) => api.post<Category>('/categories', dto),
     onSuccess: (category) => {
-      queryClient.setQueryData<Category[]>(categoryKeys.all, (prev) => (prev ? [...prev, category] : [category]));
+      queryClient.setQueryData<Category[]>(categoryKeys.all, (prev) =>
+        prev ? [...prev, category] : [category],
+      );
     },
   });
 }
@@ -30,7 +32,9 @@ export function useDeleteCategory() {
   return useMutation({
     mutationFn: (id: string) => api.delete<{ success: boolean }>(`/categories/${id}`),
     onSuccess: (_result, id) => {
-      queryClient.setQueryData<Category[]>(categoryKeys.all, (prev) => prev?.filter((c) => c.id !== id));
+      queryClient.setQueryData<Category[]>(categoryKeys.all, (prev) =>
+        prev?.filter((c) => c.id !== id),
+      );
     },
   });
 }

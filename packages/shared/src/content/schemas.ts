@@ -79,7 +79,16 @@ export const eventContentSchema = z
     path: ['end'],
   });
 
-export const cryptoCurrencySchema = z.enum(['BTC', 'ETH', 'LTC', 'BCH', 'XRP', 'DOGE', 'SOL', 'USDT']);
+export const cryptoCurrencySchema = z.enum([
+  'BTC',
+  'ETH',
+  'LTC',
+  'BCH',
+  'XRP',
+  'DOGE',
+  'SOL',
+  'USDT',
+]);
 
 export const cryptoContentSchema = z.object({
   currency: cryptoCurrencySchema,
@@ -99,14 +108,16 @@ export const imageContentSchema = z.object({
   caption: z.string().trim().max(500).optional(),
 });
 
-export const appStoreContentSchema = z.object({
-  iosUrl: z.string().trim().url().optional(),
-  androidUrl: z.string().trim().url().optional(),
-  fallbackUrl: z.string().trim().url().optional(),
-  title: z.string().trim().max(150).optional(),
-}).refine((data) => data.iosUrl || data.androidUrl || data.fallbackUrl, {
-  message: 'At least one of iosUrl, androidUrl or fallbackUrl is required',
-});
+export const appStoreContentSchema = z
+  .object({
+    iosUrl: z.string().trim().url().optional(),
+    androidUrl: z.string().trim().url().optional(),
+    fallbackUrl: z.string().trim().url().optional(),
+    title: z.string().trim().max(150).optional(),
+  })
+  .refine((data) => data.iosUrl || data.androidUrl || data.fallbackUrl, {
+    message: 'At least one of iosUrl, androidUrl or fallbackUrl is required',
+  });
 
 export const socialPlatformSchema = z.enum([
   'instagram',

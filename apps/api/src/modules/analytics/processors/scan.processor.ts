@@ -104,17 +104,28 @@ export class ScanProcessor extends WorkerHost {
       data: { firstScannedAt: scannedAt },
     });
 
-    const day = new Date(Date.UTC(scannedAt.getUTCFullYear(), scannedAt.getUTCMonth(), scannedAt.getUTCDate()));
+    const day = new Date(
+      Date.UTC(scannedAt.getUTCFullYear(), scannedAt.getUTCMonth(), scannedAt.getUTCDate()),
+    );
     await this.prisma.scanDailyStat.upsert({
       where: { qrCodeId_date: { qrCodeId: data.qrCodeId, date: day } },
-      update: { totalScans: { increment: 1 }, uniqueScans: isUnique ? { increment: 1 } : undefined },
+      update: {
+        totalScans: { increment: 1 },
+        uniqueScans: isUnique ? { increment: 1 } : undefined,
+      },
       create: { qrCodeId: data.qrCodeId, date: day, totalScans: 1, uniqueScans: isUnique ? 1 : 0 },
     });
   }
 
   /** Redis-backed dedup: same (qrCode, ip+UA fingerprint) within 24h counts as one unique visitor. */
-  private async checkAndMarkUnique(qrCodeId: string, ip: string | undefined, userAgent: string | undefined): Promise<boolean> {
-    const fingerprint = createHash('sha256').update(`${ip ?? 'unknown'}:${userAgent ?? 'unknown'}`).digest('hex');
+  private async checkAndMarkUnique(
+    qrCodeId: string,
+    ip: string | undefined,
+    userAgent: string | undefined,
+  ): Promise<boolean> {
+    const fingerprint = createHash('sha256')
+      .update(`${ip ?? 'unknown'}:${userAgent ?? 'unknown'}`)
+      .digest('hex');
     const key = `scan-fp:${qrCodeId}:${fingerprint}`;
     const result = await this.redis.client.set(key, '1', 'EX', UNIQUE_WINDOW_SECONDS, 'NX');
     return result === 'OK';

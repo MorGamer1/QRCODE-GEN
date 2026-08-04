@@ -21,8 +21,19 @@ describe('sanitizeQr', () => {
   });
 
   it('preserves every other field unchanged', () => {
-    const qr = { id: 'qr-1', name: 'Test', shortCode: 'AbC1234', passwordHash: null, tags: ['a', 'b'] };
+    const qr = {
+      id: 'qr-1',
+      name: 'Test',
+      shortCode: 'AbC1234',
+      passwordHash: null,
+      tags: ['a', 'b'],
+    };
     const result = sanitizeQr(qr);
-    expect(result).toMatchObject({ id: 'qr-1', name: 'Test', shortCode: 'AbC1234', tags: ['a', 'b'] });
+    expect(result).toMatchObject({
+      id: 'qr-1',
+      name: 'Test',
+      shortCode: 'AbC1234',
+      tags: ['a', 'b'],
+    });
   });
 });

@@ -93,7 +93,11 @@ export class AuthController {
   @Public()
   @RateLimit(RATE_LIMIT.AUTH)
   @Post('register')
-  async register(@Body() dto: RegisterDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async register(
+    @Body() dto: RegisterDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const result = await this.authService.register(dto, this.meta(req));
     if (result.tokens) this.setSessionCookies(res, result.tokens);
     return {
@@ -106,7 +110,11 @@ export class AuthController {
   @Public()
   @RateLimit(RATE_LIMIT.AUTH)
   @Post('login')
-  async login(@Body() dto: LoginDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async login(
+    @Body() dto: LoginDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const result = await this.authService.login(dto, this.meta(req));
     if (result.status === 'twoFactorRequired') return { twoFactorRequired: true };
     this.setSessionCookies(res, result.tokens);

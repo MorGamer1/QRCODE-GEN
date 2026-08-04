@@ -21,7 +21,12 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     });
   }
 
-  async validate(_accessToken: string, _refreshToken: string, profile: Profile, done: VerifyCallback): Promise<void> {
+  async validate(
+    _accessToken: string,
+    _refreshToken: string,
+    profile: Profile,
+    done: VerifyCallback,
+  ): Promise<void> {
     const email = profile.emails?.[0]?.value;
     if (!email) {
       done(new Error('Google account has no accessible email address'), undefined);

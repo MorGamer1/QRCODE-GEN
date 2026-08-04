@@ -14,7 +14,13 @@ import { Topbar } from './topbar';
  * probably exists - this hook actually calls the API (with silent access-token refresh)
  * and is the real authority on whether the user is allowed to see what's behind it.
  */
-export function AppShell({ children, requireAdmin = false }: { children: React.ReactNode; requireAdmin?: boolean }) {
+export function AppShell({
+  children,
+  requireAdmin = false,
+}: {
+  children: React.ReactNode;
+  requireAdmin?: boolean;
+}) {
   const router = useRouter();
   const { data: user, isPending, isError } = useCurrentUser();
   const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.SUPER_ADMIN;

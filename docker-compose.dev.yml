@@ -19,11 +19,11 @@ services:
       POSTGRES_PASSWORD: qrgen_dev_password
       POSTGRES_DB: qrgen
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - ./infra/data/dev-postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d qrgen"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d qrgen']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -32,11 +32,11 @@ services:
     image: redis:7-alpine
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - ./infra/data/dev-redis:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -49,19 +49,19 @@ services:
       MINIO_ROOT_USER: devkey
       MINIO_ROOT_PASSWORD: devsecret
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - '9000:9000'
+      - '9001:9001'
     volumes:
       - ./infra/data/dev-minio:/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
       interval: 10s
       timeout: 5s
       retries: 5
 
   minio-init:
     image: minio/mc:RELEASE.2024-12-18T13-15-44Z
-    restart: "no"
+    restart: 'no'
     depends_on:
       minio:
         condition: service_healthy

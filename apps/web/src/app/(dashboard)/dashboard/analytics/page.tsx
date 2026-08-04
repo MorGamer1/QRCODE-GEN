@@ -21,14 +21,26 @@ export default function AnalyticsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Analytics</h1>
-          <p className="text-sm text-muted-foreground">Scan activity across every QR code in your account.</p>
+          <p className="text-sm text-muted-foreground">
+            Scan activity across every QR code in your account.
+          </p>
         </div>
         <RangeSelect value={preset} onChange={setPreset} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard icon={MousePointerClick} label="Total scans" value={data?.totalScans} loading={isPending} />
-        <StatCard icon={Eye} label="Unique scans" value={data?.totalUniqueScans} loading={isPending} />
+        <StatCard
+          icon={MousePointerClick}
+          label="Total scans"
+          value={data?.totalScans}
+          loading={isPending}
+        />
+        <StatCard
+          icon={Eye}
+          label="Unique scans"
+          value={data?.totalUniqueScans}
+          loading={isPending}
+        />
         <StatCard icon={QrCode} label="QR codes" value={data?.totalQrCodes} loading={isPending} />
       </div>
 
@@ -36,7 +48,13 @@ export default function AnalyticsPage() {
         <CardHeader>
           <CardTitle>Scan trend</CardTitle>
         </CardHeader>
-        <CardContent>{isPending ? <Skeleton className="h-72 w-full" /> : <ScanTimeseriesChart data={data?.timeseries ?? []} />}</CardContent>
+        <CardContent>
+          {isPending ? (
+            <Skeleton className="h-72 w-full" />
+          ) : (
+            <ScanTimeseriesChart data={data?.timeseries ?? []} />
+          )}
+        </CardContent>
       </Card>
 
       <Card>
@@ -59,9 +77,13 @@ export default function AnalyticsPage() {
                   href={`/dashboard/qr-codes/${qr.id}`}
                   className="flex items-center gap-3 py-3 transition-colors hover:bg-accent/50"
                 >
-                  <span className="w-5 shrink-0 text-center text-sm text-muted-foreground">{i + 1}</span>
+                  <span className="w-5 shrink-0 text-center text-sm text-muted-foreground">
+                    {i + 1}
+                  </span>
                   <span className="flex-1 truncate text-sm font-medium">{qr.name}</span>
-                  <span className="text-sm text-muted-foreground">{formatNumber(qr.totalScans)} scans</span>
+                  <span className="text-sm text-muted-foreground">
+                    {formatNumber(qr.totalScans)} scans
+                  </span>
                 </Link>
               ))}
             </div>
@@ -90,7 +112,11 @@ function StatCard({
           <Icon className="h-5 w-5" />
         </div>
         <div>
-          {loading ? <Skeleton className="h-7 w-16" /> : <p className="text-2xl font-semibold leading-none">{formatNumber(value ?? 0)}</p>}
+          {loading ? (
+            <Skeleton className="h-7 w-16" />
+          ) : (
+            <p className="text-2xl font-semibold leading-none">{formatNumber(value ?? 0)}</p>
+          )}
           <p className="mt-1 text-sm text-muted-foreground">{label}</p>
         </div>
       </CardContent>

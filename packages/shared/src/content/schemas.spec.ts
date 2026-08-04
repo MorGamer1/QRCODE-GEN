@@ -74,8 +74,7 @@ describe('smsContentSchema / whatsappContentSchema', () => {
 
   it('caps WhatsApp message length at 2000 chars', () => {
     expect(
-      whatsappContentSchema.safeParse({ phone: '+14155552671', message: 'a'.repeat(2001) })
-        .success,
+      whatsappContentSchema.safeParse({ phone: '+14155552671', message: 'a'.repeat(2001) }).success,
     ).toBe(false);
   });
 });
@@ -109,8 +108,7 @@ describe('vcardContentSchema', () => {
 
   it('accepts empty string for optional contact fields (form-friendly)', () => {
     expect(
-      vcardContentSchema.safeParse({ firstName: 'Ada', phone: '', email: '', website: '' })
-        .success,
+      vcardContentSchema.safeParse({ firstName: 'Ada', phone: '', email: '', website: '' }).success,
     ).toBe(true);
   });
 
@@ -141,9 +139,9 @@ describe('eventContentSchema', () => {
   });
 
   it('accepts an end after the start', () => {
-    expect(
-      eventContentSchema.safeParse({ ...base, end: '2026-09-01T20:00:00.000Z' }).success,
-    ).toBe(true);
+    expect(eventContentSchema.safeParse({ ...base, end: '2026-09-01T20:00:00.000Z' }).success).toBe(
+      true,
+    );
   });
 
   it('rejects an end before the start', () => {
@@ -166,15 +164,17 @@ describe('eventContentSchema', () => {
 describe('cryptoContentSchema', () => {
   it('accepts a supported currency and plausible address', () => {
     expect(
-      cryptoContentSchema.safeParse({ currency: 'BTC', address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa' })
-        .success,
+      cryptoContentSchema.safeParse({
+        currency: 'BTC',
+        address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+      }).success,
     ).toBe(true);
   });
 
   it('rejects an unsupported currency code', () => {
-    expect(cryptoContentSchema.safeParse({ currency: 'DOGECOIN', address: '1234567890' }).success).toBe(
-      false,
-    );
+    expect(
+      cryptoContentSchema.safeParse({ currency: 'DOGECOIN', address: '1234567890' }).success,
+    ).toBe(false);
   });
 
   it('rejects a non-positive amount', () => {

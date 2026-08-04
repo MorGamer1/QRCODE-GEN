@@ -10,7 +10,8 @@ import { Field, getFieldError, toDatetimeLocalValue, toIsoString } from './share
 export function EventFields({ prefix }: { prefix: string }) {
   const { register, control, formState } = useFormContext();
   const { errors } = formState;
-  const timezoneGuess = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : undefined;
+  const timezoneGuess =
+    typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : undefined;
 
   return (
     <div className="space-y-4">
@@ -42,7 +43,9 @@ export function EventFields({ prefix }: { prefix: string }) {
                 id="c-end"
                 type="datetime-local"
                 value={toDatetimeLocalValue(field.value)}
-                onChange={(e) => field.onChange(e.target.value ? toIsoString(e.target.value) : undefined)}
+                onChange={(e) =>
+                  field.onChange(e.target.value ? toIsoString(e.target.value) : undefined)
+                }
               />
             )}
           />
@@ -63,10 +66,20 @@ export function EventFields({ prefix }: { prefix: string }) {
         )}
       />
 
-      <Field id="c-location" label="Location" optional error={getFieldError(errors, `${prefix}.location`)}>
+      <Field
+        id="c-location"
+        label="Location"
+        optional
+        error={getFieldError(errors, `${prefix}.location`)}
+      >
         <Input id="c-location" {...register(`${prefix}.location`)} />
       </Field>
-      <Field id="c-description" label="Description" optional error={getFieldError(errors, `${prefix}.description`)}>
+      <Field
+        id="c-description"
+        label="Description"
+        optional
+        error={getFieldError(errors, `${prefix}.description`)}
+      >
         <Textarea id="c-description" rows={3} {...register(`${prefix}.description`)} />
       </Field>
       <Field
@@ -76,7 +89,11 @@ export function EventFields({ prefix }: { prefix: string }) {
         hint={timezoneGuess ? `Defaults to your device's timezone (${timezoneGuess})` : undefined}
         error={getFieldError(errors, `${prefix}.timezone`)}
       >
-        <Input id="c-timezone" placeholder={timezoneGuess ?? 'America/Los_Angeles'} {...register(`${prefix}.timezone`)} />
+        <Input
+          id="c-timezone"
+          placeholder={timezoneGuess ?? 'America/Los_Angeles'}
+          {...register(`${prefix}.timezone`)}
+        />
       </Field>
     </div>
   );

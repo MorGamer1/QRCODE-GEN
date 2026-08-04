@@ -21,7 +21,12 @@ describe('PasswordRequirements', () => {
 
   it('marks every rule as met for a fully valid password', () => {
     render(<PasswordRequirements value="CorrectHorse123" />);
-    for (const label of ['At least 8 characters', 'A lowercase letter', 'An uppercase letter', 'A number']) {
+    for (const label of [
+      'At least 8 characters',
+      'A lowercase letter',
+      'An uppercase letter',
+      'A number',
+    ]) {
       expect(screen.getByText(label)).toHaveClass('text-success');
     }
   });

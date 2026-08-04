@@ -30,7 +30,12 @@ export function BreakdownTabs({ qrId, range }: { qrId: string; range: ResolvedRa
       </TabsList>
       {DIMENSIONS.map((d) => (
         <TabsContent key={d.value} value={d.value}>
-          <BreakdownPanel qrId={qrId} dimension={d.value} range={range} showMap={d.value === 'country'} />
+          <BreakdownPanel
+            qrId={qrId}
+            dimension={d.value}
+            range={range}
+            showMap={d.value === 'country'}
+          />
         </TabsContent>
       ))}
     </Tabs>

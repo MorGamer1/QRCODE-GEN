@@ -6,7 +6,9 @@ export function cn(...inputs: ClassValue[]): string {
 }
 
 export function formatNumber(value: number): string {
-  return new Intl.NumberFormat('en-US', { notation: value >= 100_000 ? 'compact' : 'standard' }).format(value);
+  return new Intl.NumberFormat('en-US', {
+    notation: value >= 100_000 ? 'compact' : 'standard',
+  }).format(value);
 }
 
 export function formatDate(value: string | Date): string {

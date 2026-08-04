@@ -48,7 +48,9 @@ export class BackupService {
     await mkdir(this.backupDir, { recursive: true });
     const fileName = `backup-${new Date().toISOString().replace(/[:.]/g, '-')}.sql.gz`;
     const filePath = join(this.backupDir, fileName);
-    const { connectionString, schema } = toPgDumpConnection(this.config.get('DATABASE_URL', { infer: true }));
+    const { connectionString, schema } = toPgDumpConnection(
+      this.config.get('DATABASE_URL', { infer: true }),
+    );
 
     await new Promise<void>((resolve, reject) => {
       const dump = spawn('pg_dump', [
@@ -73,7 +75,8 @@ export class BackupService {
 
       dump.stdout.pipe(gzip).pipe(out);
       dump.on('close', (code) => {
-        if (code !== 0) reject(new Error(`pg_dump exited with code ${code}: ${stderr.slice(0, 2000)}`));
+        if (code !== 0)
+          reject(new Error(`pg_dump exited with code ${code}: ${stderr.slice(0, 2000)}`));
       });
     });
 
@@ -83,7 +86,8 @@ export class BackupService {
   }
 
   async resolvePath(fileName: string): Promise<string> {
-    if (!BACKUP_FILE_PATTERN.test(fileName)) throw new BadRequestException('Invalid backup file name');
+    if (!BACKUP_FILE_PATTERN.test(fileName))
+      throw new BadRequestException('Invalid backup file name');
     const filePath = join(this.backupDir, fileName);
     try {
       await stat(filePath);

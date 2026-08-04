@@ -1,4 +1,8 @@
-import { PrismaClient, ContentType as PrismaContentType, QrCodeType as PrismaQrCodeType } from '@prisma/client';
+import {
+  PrismaClient,
+  ContentType as PrismaContentType,
+  QrCodeType as PrismaQrCodeType,
+} from '@prisma/client';
 import * as argon2 from 'argon2';
 import {
   ContentType,
@@ -101,7 +105,9 @@ async function main() {
   const now = Date.now();
   const scanRows = Array.from({ length: 180 }).map((_, i) => {
     const daysAgo = Math.floor(Math.random() * 30);
-    const scannedAt = new Date(now - daysAgo * 24 * 60 * 60 * 1000 - Math.floor(Math.random() * 86400000));
+    const scannedAt = new Date(
+      now - daysAgo * 24 * 60 * 60 * 1000 - Math.floor(Math.random() * 86400000),
+    );
     return {
       qrCodeId: dynamicQr.id,
       scannedAt,
@@ -131,7 +137,12 @@ async function main() {
       prisma.scanDailyStat.upsert({
         where: { qrCodeId_date: { qrCodeId: dynamicQr.id, date: new Date(date) } },
         update: { totalScans: stat.total, uniqueScans: stat.unique },
-        create: { qrCodeId: dynamicQr.id, date: new Date(date), totalScans: stat.total, uniqueScans: stat.unique },
+        create: {
+          qrCodeId: dynamicQr.id,
+          date: new Date(date),
+          totalScans: stat.total,
+          uniqueScans: stat.unique,
+        },
       }),
     ),
   );
@@ -141,8 +152,14 @@ async function main() {
     data: {
       totalScans: scanRows.length,
       uniqueScans: scanRows.filter((s) => s.isUnique).length,
-      firstScannedAt: scanRows.reduce((min, s) => (s.scannedAt < min ? s.scannedAt : min), scanRows[0]!.scannedAt),
-      lastScannedAt: scanRows.reduce((max, s) => (s.scannedAt > max ? s.scannedAt : max), scanRows[0]!.scannedAt),
+      firstScannedAt: scanRows.reduce(
+        (min, s) => (s.scannedAt < min ? s.scannedAt : min),
+        scanRows[0]!.scannedAt,
+      ),
+      lastScannedAt: scanRows.reduce(
+        (max, s) => (s.scannedAt > max ? s.scannedAt : max),
+        scanRows[0]!.scannedAt,
+      ),
     },
   });
 

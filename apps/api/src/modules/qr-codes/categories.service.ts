@@ -15,7 +15,9 @@ export class CategoriesService {
   }
 
   async create(userId: string, dto: CreateCategoryDto) {
-    const existing = await this.prisma.category.findUnique({ where: { userId_name: { userId, name: dto.name } } });
+    const existing = await this.prisma.category.findUnique({
+      where: { userId_name: { userId, name: dto.name } },
+    });
     if (existing) throw new ConflictException('A category with this name already exists');
     return this.prisma.category.create({ data: { userId, name: dto.name, color: dto.color } });
   }

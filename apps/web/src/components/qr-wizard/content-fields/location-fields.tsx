@@ -19,7 +19,11 @@ export function LocationFields({ prefix }: { prefix: string }) {
             {...register(`${prefix}.latitude`, { valueAsNumber: true })}
           />
         </Field>
-        <Field id="c-longitude" label="Longitude" error={getFieldError(errors, `${prefix}.longitude`)}>
+        <Field
+          id="c-longitude"
+          label="Longitude"
+          error={getFieldError(errors, `${prefix}.longitude`)}
+        >
           <Input
             id="c-longitude"
             type="number"

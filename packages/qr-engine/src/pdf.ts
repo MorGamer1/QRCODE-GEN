@@ -28,7 +28,11 @@ export function renderScenePdf(scene: QrScene, options: PdfOptions = {}): Promis
     doc.on('error', reject);
 
     try {
-      SVGtoPDF(doc, svg, 0, 0, { width: widthPt, height: heightPt, preserveAspectRatio: 'xMidYMid meet' });
+      SVGtoPDF(doc, svg, 0, 0, {
+        width: widthPt,
+        height: heightPt,
+        preserveAspectRatio: 'xMidYMid meet',
+      });
       doc.end();
     } catch (error) {
       reject(error instanceof Error ? error : new Error(String(error)));

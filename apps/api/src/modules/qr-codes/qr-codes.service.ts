@@ -1,4 +1,9 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   AuditAction,
@@ -64,7 +69,10 @@ export class QrCodesService {
   private async generateUniqueShortCode(): Promise<string> {
     for (let attempt = 0; attempt < 8; attempt += 1) {
       const code = generateShortCode();
-      const exists = await this.prisma.qrCode.findUnique({ where: { shortCode: code }, select: { id: true } });
+      const exists = await this.prisma.qrCode.findUnique({
+        where: { shortCode: code },
+        select: { id: true },
+      });
       if (!exists) return code;
     }
     throw new BadRequestException('Could not allocate a unique short code, please try again');
@@ -75,7 +83,9 @@ export class QrCodesService {
     if (settings.maxQrCodesPerUser) {
       const count = await this.prisma.qrCode.count({ where: { userId } });
       if (count >= settings.maxQrCodesPerUser) {
-        throw new ForbiddenException(`You've reached the limit of ${settings.maxQrCodesPerUser} QR codes`);
+        throw new ForbiddenException(
+          `You've reached the limit of ${settings.maxQrCodesPerUser} QR codes`,
+        );
       }
     }
 
@@ -86,7 +96,10 @@ export class QrCodesService {
     let encodedPayload: string;
     if (dto.type === QrCodeType.DYNAMIC) {
       shortCode = await this.generateUniqueShortCode();
-      encodedPayload = buildRedirectUrl(this.config.get('PUBLIC_BASE_URL', { infer: true }), shortCode);
+      encodedPayload = buildRedirectUrl(
+        this.config.get('PUBLIC_BASE_URL', { infer: true }),
+        shortCode,
+      );
     } else {
       encodedPayload = encodeStaticContent(dto.content.contentType, payload);
     }
@@ -107,7 +120,12 @@ export class QrCodesService {
       },
     });
 
-    this.audit.record({ userId, action: AuditAction.QR_CREATED, entityType: 'QrCode', entityId: qr.id });
+    this.audit.record({
+      userId,
+      action: AuditAction.QR_CREATED,
+      entityType: 'QrCode',
+      entityId: qr.id,
+    });
     return sanitizeQr(qr);
   }
 
@@ -118,7 +136,9 @@ export class QrCodesService {
       ...(query.isFavorite !== undefined ? { isFavorite: query.isFavorite } : {}),
       ...(query.categoryId ? { categoryId: query.categoryId } : {}),
       ...(query.type ? { type: query.type as unknown as PrismaQrCodeType } : {}),
-      ...(query.contentType ? { contentType: query.contentType as unknown as PrismaContentType } : {}),
+      ...(query.contentType
+        ? { contentType: query.contentType as unknown as PrismaContentType }
+        : {}),
       ...(query.tags && query.tags.length > 0 ? { tags: { hasSome: query.tags } } : {}),
       ...(query.search
         ? {
@@ -161,7 +181,12 @@ export class QrCodesService {
   async updateMeta(userId: string, id: string, dto: UpdateQrMetaDto) {
     await this.requireOwned(userId, id);
     const qr = await this.prisma.qrCode.update({ where: { id }, data: dto });
-    this.audit.record({ userId, action: AuditAction.QR_UPDATED, entityType: 'QrCode', entityId: id });
+    this.audit.record({
+      userId,
+      action: AuditAction.QR_UPDATED,
+      entityType: 'QrCode',
+      entityId: id,
+    });
     await this.redirectCache.invalidate(qr.shortCode);
     return sanitizeQr(qr);
   }
@@ -172,7 +197,12 @@ export class QrCodesService {
       where: { id },
       data: { design: dto as unknown as Prisma.InputJsonValue },
     });
-    this.audit.record({ userId, action: AuditAction.QR_UPDATED, entityType: 'QrCode', entityId: id });
+    this.audit.record({
+      userId,
+      action: AuditAction.QR_UPDATED,
+      entityType: 'QrCode',
+      entityId: id,
+    });
     await this.redirectCache.invalidate(existing.shortCode);
     return sanitizeQr(qr);
   }
@@ -180,7 +210,9 @@ export class QrCodesService {
   async updateContent(userId: string, id: string, dto: UpdateQrContentDto) {
     const existing = await this.requireOwned(userId, id);
     if (existing.type !== 'DYNAMIC') {
-      throw new BadRequestException('Static QR codes cannot be edited after creation - only dynamic QR codes support content updates');
+      throw new BadRequestException(
+        'Static QR codes cannot be edited after creation - only dynamic QR codes support content updates',
+      );
     }
     // dto already passed qrContentSchema's per-contentType validation (see qrcode.dto.ts) at the pipe level.
 
@@ -191,7 +223,12 @@ export class QrCodesService {
         content: dto.data as Prisma.InputJsonValue,
       },
     });
-    this.audit.record({ userId, action: AuditAction.QR_UPDATED, entityType: 'QrCode', entityId: id });
+    this.audit.record({
+      userId,
+      action: AuditAction.QR_UPDATED,
+      entityType: 'QrCode',
+      entityId: id,
+    });
     await this.redirectCache.invalidate(existing.shortCode);
     return sanitizeQr(qr);
   }
@@ -203,20 +240,40 @@ export class QrCodesService {
     }
 
     const passwordHash =
-      dto.password === undefined ? undefined : dto.password === null ? null : await this.passwords.hash(dto.password);
+      dto.password === undefined
+        ? undefined
+        : dto.password === null
+          ? null
+          : await this.passwords.hash(dto.password);
 
     const qr = await this.prisma.qrCode.update({
       where: { id },
       data: {
         redirectStatusCode: dto.statusCode,
-        expiresAt: dto.expiresAt === undefined ? undefined : dto.expiresAt ? new Date(dto.expiresAt) : null,
+        expiresAt:
+          dto.expiresAt === undefined ? undefined : dto.expiresAt ? new Date(dto.expiresAt) : null,
         scanLimit: dto.scanLimit,
-        activateAt: dto.activateAt === undefined ? undefined : dto.activateAt ? new Date(dto.activateAt) : null,
-        deactivateAt: dto.deactivateAt === undefined ? undefined : dto.deactivateAt ? new Date(dto.deactivateAt) : null,
+        activateAt:
+          dto.activateAt === undefined
+            ? undefined
+            : dto.activateAt
+              ? new Date(dto.activateAt)
+              : null,
+        deactivateAt:
+          dto.deactivateAt === undefined
+            ? undefined
+            : dto.deactivateAt
+              ? new Date(dto.deactivateAt)
+              : null,
         ...(passwordHash !== undefined ? { passwordHash } : {}),
       },
     });
-    this.audit.record({ userId, action: AuditAction.QR_UPDATED, entityType: 'QrCode', entityId: id });
+    this.audit.record({
+      userId,
+      action: AuditAction.QR_UPDATED,
+      entityType: 'QrCode',
+      entityId: id,
+    });
     await this.redirectCache.invalidate(existing.shortCode);
     return sanitizeQr(qr);
   }
@@ -227,7 +284,10 @@ export class QrCodesService {
     let encodedPayload = source.encodedPayload;
     if (source.type === 'DYNAMIC') {
       shortCode = await this.generateUniqueShortCode();
-      encodedPayload = buildRedirectUrl(this.config.get('PUBLIC_BASE_URL', { infer: true }), shortCode);
+      encodedPayload = buildRedirectUrl(
+        this.config.get('PUBLIC_BASE_URL', { infer: true }),
+        shortCode,
+      );
     }
 
     const copy = await this.prisma.qrCode.create({
@@ -245,7 +305,12 @@ export class QrCodesService {
         categoryId: source.categoryId,
       },
     });
-    this.audit.record({ userId, action: AuditAction.QR_CREATED, entityType: 'QrCode', entityId: copy.id });
+    this.audit.record({
+      userId,
+      action: AuditAction.QR_CREATED,
+      entityType: 'QrCode',
+      entityId: copy.id,
+    });
     return sanitizeQr(copy);
   }
 
@@ -253,36 +318,63 @@ export class QrCodesService {
     const existing = await this.requireOwned(userId, id);
     await this.prisma.qrCode.delete({ where: { id } });
     await this.redirectCache.invalidate(existing.shortCode);
-    this.audit.record({ userId, action: AuditAction.QR_DELETED, entityType: 'QrCode', entityId: id });
+    this.audit.record({
+      userId,
+      action: AuditAction.QR_DELETED,
+      entityType: 'QrCode',
+      entityId: id,
+    });
   }
 
   async bulkAction(userId: string, dto: BulkActionDto): Promise<{ affected: number }> {
     const ids = dto.ids.slice(0, MAX_BULK);
-    const owned = await this.prisma.qrCode.findMany({ where: { id: { in: ids }, userId }, select: { id: true, shortCode: true } });
+    const owned = await this.prisma.qrCode.findMany({
+      where: { id: { in: ids }, userId },
+      select: { id: true, shortCode: true },
+    });
     const ownedIds = owned.map((o) => o.id);
     if (ownedIds.length === 0) return { affected: 0 };
 
     switch (dto.action) {
       case 'archive':
-        await this.prisma.qrCode.updateMany({ where: { id: { in: ownedIds } }, data: { isArchived: true } });
+        await this.prisma.qrCode.updateMany({
+          where: { id: { in: ownedIds } },
+          data: { isArchived: true },
+        });
         break;
       case 'unarchive':
-        await this.prisma.qrCode.updateMany({ where: { id: { in: ownedIds } }, data: { isArchived: false } });
+        await this.prisma.qrCode.updateMany({
+          where: { id: { in: ownedIds } },
+          data: { isArchived: false },
+        });
         break;
       case 'favorite':
-        await this.prisma.qrCode.updateMany({ where: { id: { in: ownedIds } }, data: { isFavorite: true } });
+        await this.prisma.qrCode.updateMany({
+          where: { id: { in: ownedIds } },
+          data: { isFavorite: true },
+        });
         break;
       case 'unfavorite':
-        await this.prisma.qrCode.updateMany({ where: { id: { in: ownedIds } }, data: { isFavorite: false } });
+        await this.prisma.qrCode.updateMany({
+          where: { id: { in: ownedIds } },
+          data: { isFavorite: false },
+        });
         break;
       case 'delete':
         await this.prisma.qrCode.deleteMany({ where: { id: { in: ownedIds } } });
-        this.audit.record({ userId, action: AuditAction.QR_DELETED, metadata: { count: ownedIds.length } });
+        this.audit.record({
+          userId,
+          action: AuditAction.QR_DELETED,
+          metadata: { count: ownedIds.length },
+        });
         break;
       case 'addTag':
       case 'removeTag': {
         if (!dto.tag) throw new BadRequestException('tag is required for addTag/removeTag');
-        const rows = await this.prisma.qrCode.findMany({ where: { id: { in: ownedIds } }, select: { id: true, tags: true } });
+        const rows = await this.prisma.qrCode.findMany({
+          where: { id: { in: ownedIds } },
+          select: { id: true, tags: true },
+        });
         await this.prisma.$transaction(
           rows.map((row) =>
             this.prisma.qrCode.update({
@@ -327,5 +419,10 @@ export class QrCodesService {
 }
 
 function slugify(value: string): string {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'qr-code';
+  return (
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '') || 'qr-code'
+  );
 }

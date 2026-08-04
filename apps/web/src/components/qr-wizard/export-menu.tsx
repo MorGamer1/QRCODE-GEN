@@ -4,7 +4,12 @@ import { Download } from 'lucide-react';
 import { ExportFormat } from '@qrgen/shared';
 import { apiDownloadUrl } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const FORMATS: { value: ExportFormat; label: string }[] = [
   { value: ExportFormat.PNG, label: 'PNG' },

@@ -75,7 +75,9 @@ export class RedirectController {
   private async resolveOr404(code: string, res: Response): Promise<CachedRedirectEntry | null> {
     const entry = await this.redirectService.resolve(code);
     if (!entry) {
-      res.status(404).send(errorPage('Not found', 'This QR code does not exist or has been deleted.'));
+      res
+        .status(404)
+        .send(errorPage('Not found', 'This QR code does not exist or has been deleted.'));
       return null;
     }
     const availability = this.redirectService.checkAvailability(entry);
@@ -94,7 +96,11 @@ export class RedirectController {
 
   @RateLimit({ limit: 120, ttlSeconds: 60 })
   @Get(':code')
-  async handleRedirect(@Param('code') code: string, @Req() req: Request, @Res() res: Response): Promise<void> {
+  async handleRedirect(
+    @Param('code') code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
     const entry = await this.resolveOr404(code, res);
     if (!entry) return;
 
@@ -133,7 +139,9 @@ export class RedirectController {
 
     const valid = await this.redirectService.verifyPassword(entry, password ?? '');
     if (!valid) {
-      res.status(401).send(passwordPromptPage(`/r/${code}/unlock`, 'Incorrect password, please try again.'));
+      res
+        .status(401)
+        .send(passwordPromptPage(`/r/${code}/unlock`, 'Incorrect password, please try again.'));
       return;
     }
 
@@ -149,7 +157,11 @@ export class RedirectController {
   }
 
   @Get(':code/download/vcard')
-  async downloadVCard(@Param('code') code: string, @Req() req: Request, @Res() res: Response): Promise<void> {
+  async downloadVCard(
+    @Param('code') code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
     const entry = await this.resolveOr404(code, res);
     if (!entry || !this.isUnlocked(req, entry) || entry.contentType !== ContentType.VCARD) {
       res.status(404).send(errorPage('Not found', 'Nothing to download here.'));
@@ -162,7 +174,11 @@ export class RedirectController {
   }
 
   @Get(':code/download/ics')
-  async downloadIcs(@Param('code') code: string, @Req() req: Request, @Res() res: Response): Promise<void> {
+  async downloadIcs(
+    @Param('code') code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
     const entry = await this.resolveOr404(code, res);
     if (!entry || !this.isUnlocked(req, entry) || entry.contentType !== ContentType.EVENT) {
       res.status(404).send(errorPage('Not found', 'Nothing to download here.'));
@@ -174,7 +190,11 @@ export class RedirectController {
     res.send(encodeEvent(payload));
   }
 
-  private async dispatchContent(entry: CachedRedirectEntry, req: Request, res: Response): Promise<void> {
+  private async dispatchContent(
+    entry: CachedRedirectEntry,
+    req: Request,
+    res: Response,
+  ): Promise<void> {
     const ua = UAParser(req.headers['user-agent']);
     const platform = detectPlatform(ua.os.name, ua.device.type);
     const geo = getClientIp(req) ? geoip.lookup(getClientIp(req)!) : null;
@@ -193,7 +213,10 @@ export class RedirectController {
     const contentType = entry.contentType as ContentType;
 
     if (isInstantRedirect(contentType)) {
-      res.redirect(entry.redirectStatusCode, this.resolveInstantTarget(contentType, entry.content, platform));
+      res.redirect(
+        entry.redirectStatusCode,
+        this.resolveInstantTarget(contentType, entry.content, platform),
+      );
       return;
     }
 
@@ -201,7 +224,11 @@ export class RedirectController {
     res.send(await this.renderLandingPage(entry, contentType));
   }
 
-  private resolveInstantTarget(contentType: ContentType, content: unknown, platform: Platform): string {
+  private resolveInstantTarget(
+    contentType: ContentType,
+    content: unknown,
+    platform: Platform,
+  ): string {
     switch (contentType) {
       case ContentType.URL:
         return validateContentPayload(ContentType.URL, content).url;
@@ -223,7 +250,10 @@ export class RedirectController {
     }
   }
 
-  private async renderLandingPage(entry: CachedRedirectEntry, contentType: ContentType): Promise<string> {
+  private async renderLandingPage(
+    entry: CachedRedirectEntry,
+    contentType: ContentType,
+  ): Promise<string> {
     const name = entry.name;
     switch (contentType) {
       case ContentType.TEXT:

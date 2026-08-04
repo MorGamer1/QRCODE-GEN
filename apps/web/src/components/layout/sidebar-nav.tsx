@@ -8,12 +8,16 @@ import { NAV_ITEMS, ADMIN_NAV_ITEM } from './nav-items';
 
 export function SidebarNav({ role, onNavigate }: { role?: UserRole; onNavigate?: () => void }) {
   const pathname = usePathname();
-  const items = role === UserRole.ADMIN || role === UserRole.SUPER_ADMIN ? [...NAV_ITEMS, ADMIN_NAV_ITEM] : NAV_ITEMS;
+  const items =
+    role === UserRole.ADMIN || role === UserRole.SUPER_ADMIN
+      ? [...NAV_ITEMS, ADMIN_NAV_ITEM]
+      : NAV_ITEMS;
 
   return (
     <nav className="flex flex-col gap-1">
       {items.map((item) => {
-        const active = item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href);
+        const active =
+          item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href);
         return (
           <Link
             key={item.href}

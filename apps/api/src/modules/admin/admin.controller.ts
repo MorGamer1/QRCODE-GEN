@@ -1,10 +1,26 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Query,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser, type RequestUser } from '../../common/decorators/current-user.decorator';
 import { AdminService } from './admin.service';
-import { AdminListQrQueryDto, AdminListUsersQueryDto, AdminSettingsDto, AdminUpdateUserDto, AuditLogQueryDto } from './dto';
+import {
+  AdminListQrQueryDto,
+  AdminListUsersQueryDto,
+  AdminSettingsDto,
+  AdminUpdateUserDto,
+  AuditLogQueryDto,
+} from './dto';
 
 @ApiTags('admin')
 @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
@@ -23,7 +39,11 @@ export class AdminController {
   }
 
   @Patch('users/:id')
-  updateUser(@CurrentUser() admin: RequestUser, @Param('id') id: string, @Body() dto: AdminUpdateUserDto) {
+  updateUser(
+    @CurrentUser() admin: RequestUser,
+    @Param('id') id: string,
+    @Body() dto: AdminUpdateUserDto,
+  ) {
     return this.adminService.updateUser(admin.id, id, dto);
   }
 

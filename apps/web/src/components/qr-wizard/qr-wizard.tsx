@@ -15,7 +15,12 @@ import {
   type CreateQrCodeDto,
 } from '@qrgen/shared';
 import { ApiError } from '@/lib/api-client';
-import { useCreateQrCode, useUpdateQrContent, useUpdateQrDesign, useUpdateQrMeta } from '@/hooks/use-qr-codes';
+import {
+  useCreateQrCode,
+  useUpdateQrContent,
+  useUpdateQrDesign,
+  useUpdateQrMeta,
+} from '@/hooks/use-qr-codes';
 import { useQrPreviewText } from '@/hooks/use-qr-preview-text';
 import type { QrCode } from '@/lib/qr-types';
 import { cn } from '@/lib/utils';
@@ -81,13 +86,22 @@ export function QrWizard({ existingQr }: { existingQr?: QrCode }) {
   const tags = useWatch({ control, name: 'tags' });
   const contentMeta = CONTENT_TYPE_REGISTRY[contentType];
 
-  const { text: previewText } = useQrPreviewText(type, contentType, contentData, existingQr?.encodedPayload);
+  const { text: previewText } = useQrPreviewText(
+    type,
+    contentType,
+    contentData,
+    existingQr?.encodedPayload,
+  );
 
   const createMutation = useCreateQrCode();
   const updateMeta = useUpdateQrMeta(existingQr?.id ?? '');
   const updateDesign = useUpdateQrDesign(existingQr?.id ?? '');
   const updateContent = useUpdateQrContent(existingQr?.id ?? '');
-  const isSaving = createMutation.isPending || updateMeta.isPending || updateDesign.isPending || updateContent.isPending;
+  const isSaving =
+    createMutation.isPending ||
+    updateMeta.isPending ||
+    updateDesign.isPending ||
+    updateContent.isPending;
 
   function handleContentTypeChange(newType: ContentType) {
     setValue('content.contentType', newType, { shouldDirty: true });
@@ -136,14 +150,18 @@ export function QrWizard({ existingQr }: { existingQr?: QrCode }) {
               <div className="space-y-1.5">
                 <Label htmlFor="qr-name">Name</Label>
                 <Input id="qr-name" placeholder="My QR code" {...register('name')} />
-                {formState.errors.name && <p className="text-xs text-destructive">{formState.errors.name.message}</p>}
+                {formState.errors.name && (
+                  <p className="text-xs text-destructive">{formState.errors.name.message}</p>
+                )}
               </div>
 
               <div className="space-y-1.5">
                 <Label>Type</Label>
                 {isEdit ? (
                   <div>
-                    <Badge variant="secondary">{existingQr!.type === QrCodeType.DYNAMIC ? 'Dynamic' : 'Static'} QR code</Badge>
+                    <Badge variant="secondary">
+                      {existingQr!.type === QrCodeType.DYNAMIC ? 'Dynamic' : 'Static'} QR code
+                    </Badge>
                   </div>
                 ) : (
                   <TypeToggle
@@ -157,17 +175,28 @@ export function QrWizard({ existingQr }: { existingQr?: QrCode }) {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label>Category</Label>
-                  <CategorySelect value={categoryId ?? null} onChange={(id) => setValue('categoryId', id, { shouldDirty: true })} />
+                  <CategorySelect
+                    value={categoryId ?? null}
+                    onChange={(id) => setValue('categoryId', id, { shouldDirty: true })}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Tags</Label>
-                  <TagsInput value={tags ?? []} onChange={(tags) => setValue('tags', tags, { shouldDirty: true })} />
+                  <TagsInput
+                    value={tags ?? []}
+                    onChange={(tags) => setValue('tags', tags, { shouldDirty: true })}
+                  />
                 </div>
               </div>
 
               <div className="space-y-1.5">
                 <Label htmlFor="qr-notes">Notes</Label>
-                <Textarea id="qr-notes" rows={2} placeholder="Internal notes, not shown to visitors" {...register('notes')} />
+                <Textarea
+                  id="qr-notes"
+                  rows={2}
+                  placeholder="Internal notes, not shown to visitors"
+                  {...register('notes')}
+                />
               </div>
             </CardContent>
           </Card>
@@ -193,14 +222,15 @@ export function QrWizard({ existingQr }: { existingQr?: QrCode }) {
                 <TabsContent value="content">
                   {isEdit && existingQr!.type === QrCodeType.STATIC ? (
                     <p className="text-sm text-muted-foreground">
-                      Static QR codes can&apos;t be edited after creation - duplicate this one to create a new code with different
-                      content.
+                      Static QR codes can&apos;t be edited after creation - duplicate this one to
+                      create a new code with different content.
                     </p>
                   ) : (
                     <>
                       {isEdit && (
                         <p className="mb-4 text-xs text-muted-foreground">
-                          This QR code&apos;s image won&apos;t change - content updates apply instantly to the existing short link.
+                          This QR code&apos;s image won&apos;t change - content updates apply
+                          instantly to the existing short link.
                         </p>
                       )}
                       <ContentTypeFields contentType={contentType} prefix="content.data" />
@@ -225,7 +255,9 @@ export function QrWizard({ existingQr }: { existingQr?: QrCode }) {
           {isEdit && existingQr && (
             <div className="space-y-3">
               <ExportMenu qrId={existingQr.id} />
-              {existingQr.type === QrCodeType.DYNAMIC && existingQr.shortCode && <ShortUrlCard encodedPayload={existingQr.encodedPayload} />}
+              {existingQr.type === QrCodeType.DYNAMIC && existingQr.shortCode && (
+                <ShortUrlCard encodedPayload={existingQr.encodedPayload} />
+              )}
             </div>
           )}
         </div>
@@ -251,7 +283,9 @@ function TypeToggle({
         onClick={() => onChange(QrCodeType.STATIC)}
         className={cn(
           'rounded px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40',
-          value === QrCodeType.STATIC ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent',
+          value === QrCodeType.STATIC
+            ? 'bg-primary text-primary-foreground'
+            : 'text-muted-foreground hover:bg-accent',
         )}
       >
         Static
@@ -261,12 +295,18 @@ function TypeToggle({
         onClick={() => onChange(QrCodeType.DYNAMIC)}
         className={cn(
           'rounded px-3 py-1.5 text-sm font-medium transition-colors',
-          value === QrCodeType.DYNAMIC ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent',
+          value === QrCodeType.DYNAMIC
+            ? 'bg-primary text-primary-foreground'
+            : 'text-muted-foreground hover:bg-accent',
         )}
       >
         Dynamic
       </button>
-      {forceDynamic && <span className="self-center px-2 text-xs text-muted-foreground">This content type requires dynamic</span>}
+      {forceDynamic && (
+        <span className="self-center px-2 text-xs text-muted-foreground">
+          This content type requires dynamic
+        </span>
+      )}
     </div>
   );
 }

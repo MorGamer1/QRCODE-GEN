@@ -8,7 +8,14 @@ import {
   QrDesign,
 } from '@qrgen/shared';
 import { encodeMatrix, getFinderPatternRegions, isInFinderRegion } from './matrix';
-import { CornerRadii, insetRadii, ringPath, roundedRectPath, uniformRadii, ZERO_RADII } from './geometry';
+import {
+  CornerRadii,
+  insetRadii,
+  ringPath,
+  roundedRectPath,
+  uniformRadii,
+  ZERO_RADII,
+} from './geometry';
 
 export type FillRef = { kind: 'solid'; color: string } | { kind: 'gradient'; id: string };
 
@@ -67,9 +74,13 @@ export interface BuildSceneOptions {
 
 function relativeLuminance(hex: string): number {
   const clean = hex.replace('#', '');
-  const full = clean.length === 3
-    ? clean.split('').map((c) => c + c).join('')
-    : clean.slice(0, 6);
+  const full =
+    clean.length === 3
+      ? clean
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : clean.slice(0, 6);
   const r = parseInt(full.slice(0, 2), 16) / 255;
   const g = parseInt(full.slice(2, 4), 16) / 255;
   const b = parseInt(full.slice(4, 6), 16) / 255;
@@ -145,7 +156,11 @@ interface ModuleNeighbors {
   right: boolean;
 }
 
-function moduleRadii(shape: ModuleShape, moduleSizePx: number, neighbors: ModuleNeighbors): CornerRadii {
+function moduleRadii(
+  shape: ModuleShape,
+  moduleSizePx: number,
+  neighbors: ModuleNeighbors,
+): CornerRadii {
   const full = moduleSizePx * 0.5;
   const soft = moduleSizePx * 0.35;
 
@@ -209,7 +224,11 @@ function pushRectOrPath(
  * validated QrDesign. Pure function - no I/O, no Node APIs - so it runs
  * identically on the server and in the browser (live preview).
  */
-export function buildQrScene(text: string, design: QrDesign, options: BuildSceneOptions = {}): QrScene {
+export function buildQrScene(
+  text: string,
+  design: QrDesign,
+  options: BuildSceneOptions = {},
+): QrScene {
   // A logo obscures part of the code; always render at max error tolerance so it stays scannable.
   const effectiveEc = design.logo ? ErrorCorrectionLevel.H : design.errorCorrectionLevel;
   const matrix = encodeMatrix(text, effectiveEc);
@@ -220,9 +239,14 @@ export function buildQrScene(text: string, design: QrDesign, options: BuildScene
 
   const frame = design.frame && design.frame.style !== FrameStyle.NONE ? design.frame : null;
   const hasLabelBand = Boolean(
-    frame && (frame.style === FrameStyle.BOTTOM_LABEL || frame.style === FrameStyle.TOP_LABEL || frame.style === FrameStyle.BANNER),
+    frame &&
+    (frame.style === FrameStyle.BOTTOM_LABEL ||
+      frame.style === FrameStyle.TOP_LABEL ||
+      frame.style === FrameStyle.BANNER),
   );
-  const hasBorder = Boolean(frame && (frame.style === FrameStyle.BANNER || frame.style === FrameStyle.ROUNDED_BORDER));
+  const hasBorder = Boolean(
+    frame && (frame.style === FrameStyle.BANNER || frame.style === FrameStyle.ROUNDED_BORDER),
+  );
   const labelOnTop = frame?.style === FrameStyle.TOP_LABEL;
 
   const borderPx = hasBorder ? moduleSizePx * 1.1 : 0;
@@ -235,8 +259,15 @@ export function buildQrScene(text: string, design: QrDesign, options: BuildScene
   const height = design.size + borderPx * 2 + labelBandPx;
 
   const { gradients, register } = createGradientRegistry();
-  const moduleFillRef = register(design.moduleFill, { kind: 'solid', color: '#000000' }, 'module') as FillRef;
-  const defaultEyeFillRef: FillRef = { kind: 'solid', color: representativeSolidColor(design.moduleFill) };
+  const moduleFillRef = register(
+    design.moduleFill,
+    { kind: 'solid', color: '#000000' },
+    'module',
+  ) as FillRef;
+  const defaultEyeFillRef: FillRef = {
+    kind: 'solid',
+    color: representativeSolidColor(design.moduleFill),
+  };
   const eyeFrameFillRef = design.eyeFrameFill
     ? (register(design.eyeFrameFill, defaultEyeFillRef, 'eyeframe') as FillRef)
     : defaultEyeFillRef;
@@ -264,7 +295,14 @@ export function buildQrScene(text: string, design: QrDesign, options: BuildScene
 
     if (hasLabelBand) {
       const bandY = labelOnTop ? 0 : height - labelBandPx;
-      commands.push({ kind: 'rect', x: 0, y: bandY, w: width, h: labelBandPx, fill: frameColorRef });
+      commands.push({
+        kind: 'rect',
+        x: 0,
+        y: bandY,
+        w: width,
+        h: labelBandPx,
+        fill: frameColorRef,
+      });
       commands.push({
         kind: 'text',
         x: width / 2,
@@ -279,7 +317,14 @@ export function buildQrScene(text: string, design: QrDesign, options: BuildScene
   }
 
   if (backgroundRef) {
-    commands.push({ kind: 'rect', x: offsetX, y: offsetY, w: design.size, h: design.size, fill: backgroundRef });
+    commands.push({
+      kind: 'rect',
+      x: offsetX,
+      y: offsetY,
+      w: design.size,
+      h: design.size,
+      fill: backgroundRef,
+    });
   }
 
   let logoBox: { x: number; y: number; w: number; h: number } | null = null;

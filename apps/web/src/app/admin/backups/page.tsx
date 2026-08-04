@@ -9,7 +9,14 @@ import { formatDateTime } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -52,7 +59,8 @@ export default function AdminBackupsPage() {
         toast.success('Backup deleted');
         setDeleteTarget(null);
       },
-      onError: (err) => toast.error(err instanceof ApiError ? err.message : 'Failed to delete backup'),
+      onError: (err) =>
+        toast.error(err instanceof ApiError ? err.message : 'Failed to delete backup'),
     });
   };
 
@@ -61,10 +69,16 @@ export default function AdminBackupsPage() {
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <div>
           <CardTitle>Database backups</CardTitle>
-          <CardDescription>On-demand pg_dump snapshots, stored on the server&apos;s backup volume.</CardDescription>
+          <CardDescription>
+            On-demand pg_dump snapshots, stored on the server&apos;s backup volume.
+          </CardDescription>
         </div>
         <Button onClick={handleCreate} disabled={createBackup.isPending}>
-          {createBackup.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
+          {createBackup.isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Database className="h-4 w-4" />
+          )}
           Create backup
         </Button>
       </CardHeader>
@@ -91,8 +105,12 @@ export default function AdminBackupsPage() {
                 {backups.map((backup) => (
                   <TableRow key={backup.fileName}>
                     <TableCell className="font-mono text-xs">{backup.fileName}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{formatBytes(backup.sizeBytes)}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{formatDateTime(backup.createdAt)}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {formatBytes(backup.sizeBytes)}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {formatDateTime(backup.createdAt)}
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end gap-1">
                         <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
@@ -118,15 +136,23 @@ export default function AdminBackupsPage() {
         )}
       </CardContent>
 
-      <AlertDialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <AlertDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this backup?</AlertDialogTitle>
-            <AlertDialogDescription>{deleteTarget} will be permanently removed from the server. This can&apos;t be undone.</AlertDialogDescription>
+            <AlertDialogDescription>
+              {deleteTarget} will be permanently removed from the server. This can&apos;t be undone.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleDelete}>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDelete}
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

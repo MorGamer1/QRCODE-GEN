@@ -66,7 +66,10 @@ describe('Auth (e2e)', () => {
     });
 
     it('returns the current user with a valid bearer token', async () => {
-      const { body } = await request(server).post('/api/v1/auth/register').send(validUser).expect(201);
+      const { body } = await request(server)
+        .post('/api/v1/auth/register')
+        .send(validUser)
+        .expect(201);
       const res = await request(server)
         .get('/api/v1/auth/me')
         .set('Authorization', `Bearer ${body.accessToken}`)
@@ -75,7 +78,10 @@ describe('Auth (e2e)', () => {
     });
 
     it('returns 401 for a garbage token', async () => {
-      await request(server).get('/api/v1/auth/me').set('Authorization', 'Bearer not-a-real-token').expect(401);
+      await request(server)
+        .get('/api/v1/auth/me')
+        .set('Authorization', 'Bearer not-a-real-token')
+        .expect(401);
     });
   });
 
@@ -124,8 +130,8 @@ describe('Auth (e2e)', () => {
       const agent = request.agent(server);
       const registerRes = await agent.post('/api/v1/auth/register').send(validUser).expect(201);
 
-      const originalRefreshCookie = (registerRes.headers['set-cookie'] as unknown as string[]).find((c) =>
-        c.startsWith('refresh_token='),
+      const originalRefreshCookie = (registerRes.headers['set-cookie'] as unknown as string[]).find(
+        (c) => c.startsWith('refresh_token='),
       );
       expect(originalRefreshCookie).toBeDefined();
       const originalRefresh = originalRefreshCookie!.split(';')[0];
@@ -134,7 +140,10 @@ describe('Auth (e2e)', () => {
       await agent.post('/api/v1/auth/refresh').expect(201);
 
       // Replaying the pre-rotation token on a fresh (cookie-less) client should now fail.
-      await request(server).post('/api/v1/auth/refresh').set('Cookie', originalRefresh!).expect(401);
+      await request(server)
+        .post('/api/v1/auth/refresh')
+        .set('Cookie', originalRefresh!)
+        .expect(401);
     });
   });
 

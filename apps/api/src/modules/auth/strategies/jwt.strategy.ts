@@ -23,7 +23,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly redis: RedisService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), extractFromCookie]),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+        extractFromCookie,
+      ]),
       ignoreExpiration: false,
       secretOrKey: config.get('JWT_ACCESS_SECRET', { infer: true }),
     });

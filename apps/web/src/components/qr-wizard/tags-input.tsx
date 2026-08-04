@@ -6,7 +6,13 @@ import { QR_MAX_TAGS, QR_TAG_MAX_LENGTH } from '@qrgen/shared';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 
-export function TagsInput({ value, onChange }: { value: string[]; onChange: (tags: string[]) => void }) {
+export function TagsInput({
+  value,
+  onChange,
+}: {
+  value: string[];
+  onChange: (tags: string[]) => void;
+}) {
   const [draft, setDraft] = React.useState('');
 
   const addTag = () => {

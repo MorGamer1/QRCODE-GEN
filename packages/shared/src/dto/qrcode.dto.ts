@@ -4,7 +4,12 @@ import { contentSchemaMap } from '../content/schemas';
 import { CONTENT_TYPE_REGISTRY } from '../content/registry';
 import { qrDesignSchema } from '../design/schema';
 import { booleanFromString, paginationQuerySchema } from './pagination';
-import { QR_MAX_TAGS, QR_NAME_MAX_LENGTH, QR_NOTES_MAX_LENGTH, QR_TAG_MAX_LENGTH } from '../constants';
+import {
+  QR_MAX_TAGS,
+  QR_NAME_MAX_LENGTH,
+  QR_NOTES_MAX_LENGTH,
+  QR_TAG_MAX_LENGTH,
+} from '../constants';
 
 export const tagSchema = z.string().trim().min(1).max(QR_TAG_MAX_LENGTH);
 export const tagsSchema = z.array(tagSchema).max(QR_MAX_TAGS).default([]);
@@ -86,7 +91,15 @@ export type RedirectSettingsDto = z.infer<typeof redirectSettingsSchema>;
 
 export const bulkActionSchema = z.object({
   ids: z.array(z.string().uuid()).min(1).max(500),
-  action: z.enum(['archive', 'unarchive', 'favorite', 'unfavorite', 'delete', 'addTag', 'removeTag']),
+  action: z.enum([
+    'archive',
+    'unarchive',
+    'favorite',
+    'unfavorite',
+    'delete',
+    'addTag',
+    'removeTag',
+  ]),
   tag: tagSchema.optional(),
 });
 export type BulkActionDto = z.infer<typeof bulkActionSchema>;
@@ -116,6 +129,10 @@ export type ListQrQueryDto = z.infer<typeof listQrQuerySchema>;
 
 export const createCategorySchema = z.object({
   name: z.string().trim().min(1).max(60),
-  color: z.string().trim().regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/).optional(),
+  color: z
+    .string()
+    .trim()
+    .regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/)
+    .optional(),
 });
 export type CreateCategoryDto = z.infer<typeof createCategorySchema>;

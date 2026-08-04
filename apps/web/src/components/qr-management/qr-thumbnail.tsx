@@ -19,7 +19,10 @@ export function QrThumbnail({ qr, className }: { qr: QrCode; className?: string 
 
   return (
     <div
-      className={cn('flex items-center justify-center overflow-hidden rounded-lg border bg-white [&>svg]:h-full [&>svg]:w-full', className)}
+      className={cn(
+        'flex items-center justify-center overflow-hidden rounded-lg border bg-white [&>svg]:h-full [&>svg]:w-full',
+        className,
+      )}
       dangerouslySetInnerHTML={svg ? { __html: svg } : undefined}
     />
   );

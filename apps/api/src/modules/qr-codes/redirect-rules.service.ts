@@ -14,7 +14,8 @@ export class RedirectRulesService {
   private async requireOwnedQr(userId: string, qrCodeId: string) {
     const qr = await this.prisma.qrCode.findFirst({ where: { id: qrCodeId, userId } });
     if (!qr) throw new NotFoundException('QR code not found');
-    if (qr.type !== 'DYNAMIC') throw new BadRequestException('Smart redirect rules only apply to dynamic QR codes');
+    if (qr.type !== 'DYNAMIC')
+      throw new BadRequestException('Smart redirect rules only apply to dynamic QR codes');
     return qr;
   }
 
@@ -69,12 +70,17 @@ export class RedirectRulesService {
 
   async reorder(userId: string, qrCodeId: string, dto: ReorderRedirectRulesDto): Promise<void> {
     const qr = await this.requireOwnedQr(userId, qrCodeId);
-    const owned = await this.prisma.redirectRule.findMany({ where: { qrCodeId }, select: { id: true } });
+    const owned = await this.prisma.redirectRule.findMany({
+      where: { qrCodeId },
+      select: { id: true },
+    });
     const ownedIds = new Set(owned.map((r) => r.id));
     const validOrder = dto.orderedIds.filter((id) => ownedIds.has(id));
 
     await this.prisma.$transaction(
-      validOrder.map((id, index) => this.prisma.redirectRule.update({ where: { id }, data: { priority: index } })),
+      validOrder.map((id, index) =>
+        this.prisma.redirectRule.update({ where: { id }, data: { priority: index } }),
+      ),
     );
     await this.redirectCache.invalidate(qr.shortCode);
   }

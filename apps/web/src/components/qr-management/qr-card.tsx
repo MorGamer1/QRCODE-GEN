@@ -3,7 +3,17 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { Archive, ArchiveRestore, Copy, Download, ExternalLink, MoreVertical, Pencil, Star, Trash2 } from 'lucide-react';
+import {
+  Archive,
+  ArchiveRestore,
+  Copy,
+  Download,
+  ExternalLink,
+  MoreVertical,
+  Pencil,
+  Star,
+  Trash2,
+} from 'lucide-react';
 import { QrCodeType } from '@qrgen/shared';
 import type { QrCode } from '@/lib/qr-types';
 import { ApiError, apiDownloadUrl } from '@/lib/api-client';
@@ -66,7 +76,8 @@ export function QrCard({
       { id: qr.id, dto: {} },
       {
         onSuccess: () => toast.success('Duplicated'),
-        onError: (err) => toast.error(err instanceof ApiError ? err.message : 'Failed to duplicate'),
+        onError: (err) =>
+          toast.error(err instanceof ApiError ? err.message : 'Failed to duplicate'),
       },
     );
 
@@ -82,7 +93,11 @@ export function QrCard({
   return (
     <div className="group relative flex flex-col rounded-xl border bg-card p-4 transition-shadow hover:shadow-md">
       <div className="absolute left-3 top-3 z-10">
-        <Checkbox checked={selected} onCheckedChange={(v) => onSelectChange(Boolean(v))} aria-label={`Select ${qr.name}`} />
+        <Checkbox
+          checked={selected}
+          onCheckedChange={(v) => onSelectChange(Boolean(v))}
+          aria-label={`Select ${qr.name}`}
+        />
       </div>
       <button
         type="button"
@@ -98,16 +113,22 @@ export function QrCard({
       </Link>
 
       <div className="flex-1 space-y-1.5">
-        <Link href={`/dashboard/qr-codes/${qr.id}`} className="line-clamp-1 font-medium hover:underline">
+        <Link
+          href={`/dashboard/qr-codes/${qr.id}`}
+          className="line-clamp-1 font-medium hover:underline"
+        >
           {qr.name}
         </Link>
         <div className="flex flex-wrap items-center gap-1.5">
-          <Badge variant={qr.type === QrCodeType.DYNAMIC ? 'default' : 'secondary'}>{qr.type === QrCodeType.DYNAMIC ? 'Dynamic' : 'Static'}</Badge>
+          <Badge variant={qr.type === QrCodeType.DYNAMIC ? 'default' : 'secondary'}>
+            {qr.type === QrCodeType.DYNAMIC ? 'Dynamic' : 'Static'}
+          </Badge>
           <Badge variant="outline">{CONTENT_TYPE_LABELS[qr.contentType]}</Badge>
           {qr.isArchived && <Badge variant="outline">Archived</Badge>}
         </div>
         <p className="text-xs text-muted-foreground">
-          {formatNumber(qr.totalScans)} scan{qr.totalScans === 1 ? '' : 's'} &middot; Updated {formatRelativeTime(qr.updatedAt)}
+          {formatNumber(qr.totalScans)} scan{qr.totalScans === 1 ? '' : 's'} &middot; Updated{' '}
+          {formatRelativeTime(qr.updatedAt)}
         </p>
       </div>
 
@@ -140,11 +161,18 @@ export function QrCard({
               <Copy className="h-4 w-4" /> Duplicate
             </DropdownMenuItem>
             <DropdownMenuItem onClick={toggleArchive}>
-              {qr.isArchived ? <ArchiveRestore className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
+              {qr.isArchived ? (
+                <ArchiveRestore className="h-4 w-4" />
+              ) : (
+                <Archive className="h-4 w-4" />
+              )}
               {qr.isArchived ? 'Restore' : 'Archive'}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteOpen(true)}>
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => setDeleteOpen(true)}
+            >
               <Trash2 className="h-4 w-4" /> Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -156,12 +184,17 @@ export function QrCard({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete &quot;{qr.name}&quot;?</AlertDialogTitle>
             <AlertDialogDescription>
-              This permanently deletes the QR code{qr.type === QrCodeType.DYNAMIC ? ', its short link, and all scan history' : ''}. This can&apos;t be undone.
+              This permanently deletes the QR code
+              {qr.type === QrCodeType.DYNAMIC ? ', its short link, and all scan history' : ''}. This
+              can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleDelete}>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDelete}
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

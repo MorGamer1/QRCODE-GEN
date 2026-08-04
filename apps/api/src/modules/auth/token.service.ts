@@ -62,7 +62,12 @@ export class TokenService {
       },
     });
 
-    return { accessToken, refreshToken, accessTokenTtlMs, refreshTokenTtlMs: ttlDays * 24 * 60 * 60 * 1000 };
+    return {
+      accessToken,
+      refreshToken,
+      accessTokenTtlMs,
+      refreshTokenTtlMs: ttlDays * 24 * 60 * 60 * 1000,
+    };
   }
 
   /**
@@ -81,7 +86,10 @@ export class TokenService {
     const user = await this.prisma.user.findUnique({ where: { id: session.userId } });
     if (!user || user.isSuspended) return null;
 
-    await this.prisma.session.update({ where: { id: session.id }, data: { revokedAt: new Date() } });
+    await this.prisma.session.update({
+      where: { id: session.id },
+      data: { revokedAt: new Date() },
+    });
     return this.issueSession(user, meta);
   }
 
@@ -106,6 +114,8 @@ export function parseDurationMs(duration: string): number {
   const match = /^(\d+)([smhd])$/.exec(duration);
   if (!match) return 15 * 60 * 1000;
   const value = Number(match[1]);
-  const unitMs = { s: 1000, m: 60_000, h: 3_600_000, d: 86_400_000 }[match[2] as 's' | 'm' | 'h' | 'd'];
+  const unitMs = { s: 1000, m: 60_000, h: 3_600_000, d: 86_400_000 }[
+    match[2] as 's' | 'm' | 'h' | 'd'
+  ];
   return value * unitMs;
 }

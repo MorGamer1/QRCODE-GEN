@@ -4,7 +4,12 @@ import { buildPaginatedResult } from '@qrgen/shared';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { bucketDaily, resolveDateRange, truncateToUtcDay } from './date-range.util';
 import { toCsv } from './csv.util';
-import type { AnalyticsExportQueryDto, AnalyticsRangeDto, BreakdownQueryDto, ScanListQueryDto } from './dto';
+import type {
+  AnalyticsExportQueryDto,
+  AnalyticsRangeDto,
+  BreakdownQueryDto,
+  ScanListQueryDto,
+} from './dto';
 
 const SCAN_EXPORT_COLUMNS = [
   'id',
@@ -59,7 +64,11 @@ export class AnalyticsService {
         WHERE "qrCodeId" = ${qrCodeId} AND "scannedAt" BETWEEN ${from} AND ${to}
         GROUP BY bucket ORDER BY bucket ASC
       `;
-      return rows.map((r) => ({ bucket: r.bucket.toISOString(), totalScans: r.total, uniqueScans: r.unique }));
+      return rows.map((r) => ({
+        bucket: r.bucket.toISOString(),
+        totalScans: r.total,
+        uniqueScans: r.unique,
+      }));
     }
 
     const daily = await this.prisma.scanDailyStat.findMany({
@@ -68,7 +77,11 @@ export class AnalyticsService {
     });
 
     if (range.granularity === 'day') {
-      return daily.map((d) => ({ bucket: d.date.toISOString().slice(0, 10), totalScans: d.totalScans, uniqueScans: d.uniqueScans }));
+      return daily.map((d) => ({
+        bucket: d.date.toISOString().slice(0, 10),
+        totalScans: d.totalScans,
+        uniqueScans: d.uniqueScans,
+      }));
     }
     return bucketDaily(daily, range.granularity);
   }
@@ -85,7 +98,10 @@ export class AnalyticsService {
     });
 
     return rows
-      .map((row) => ({ value: (row as Record<string, unknown>)[field] ?? 'Unknown', count: row._count._all }))
+      .map((row) => ({
+        value: (row as Record<string, unknown>)[field] ?? 'Unknown',
+        count: row._count._all,
+      }))
       .sort((a, b) => b.count - a.count);
   }
 
@@ -106,7 +122,11 @@ export class AnalyticsService {
     return buildPaginatedResult(items, total, query.page, query.pageSize);
   }
 
-  async exportScans(userId: string, qrCodeId: string, query: AnalyticsExportQueryDto): Promise<{ body: string; contentType: string; fileName: string }> {
+  async exportScans(
+    userId: string,
+    qrCodeId: string,
+    query: AnalyticsExportQueryDto,
+  ): Promise<{ body: string; contentType: string; fileName: string }> {
     const qr = await this.requireOwnedQr(userId, qrCodeId);
     const { from, to } = resolveDateRange(query);
     const scans = await this.prisma.scan.findMany({
@@ -141,7 +161,10 @@ export class AnalyticsService {
     const { from, to } = resolveDateRange(range);
     const daily = await this.prisma.scanDailyStat.groupBy({
       by: ['date'],
-      where: { qrCode: { userId }, date: { gte: truncateToUtcDay(from), lte: truncateToUtcDay(to) } },
+      where: {
+        qrCode: { userId },
+        date: { gte: truncateToUtcDay(from), lte: truncateToUtcDay(to) },
+      },
       _sum: { totalScans: true, uniqueScans: true },
       orderBy: { date: 'asc' },
     });

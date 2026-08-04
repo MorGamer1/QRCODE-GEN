@@ -42,7 +42,9 @@ export class TwoFactorService {
 
   async generateRecoveryCodes(userId: string): Promise<string[]> {
     await this.prisma.twoFactorRecoveryCode.deleteMany({ where: { userId } });
-    const codes = Array.from({ length: RECOVERY_CODE_COUNT }, () => formatRecoveryCode(randomBytes(5)));
+    const codes = Array.from({ length: RECOVERY_CODE_COUNT }, () =>
+      formatRecoveryCode(randomBytes(5)),
+    );
     await this.prisma.twoFactorRecoveryCode.createMany({
       data: codes.map((code) => ({ userId, codeHash: this.hashCode(code) })),
     });
@@ -55,7 +57,10 @@ export class TwoFactorService {
       where: { userId, codeHash: hash, usedAt: null },
     });
     if (!record) return false;
-    await this.prisma.twoFactorRecoveryCode.update({ where: { id: record.id }, data: { usedAt: new Date() } });
+    await this.prisma.twoFactorRecoveryCode.update({
+      where: { id: record.id },
+      data: { usedAt: new Date() },
+    });
     return true;
   }
 }

@@ -59,9 +59,9 @@ describe('encodeWhatsapp', () => {
 
 describe('encodeWifi', () => {
   it('produces a standard WIFI: string for WPA networks', () => {
-    expect(encodeWifi({ ssid: 'MyNetwork', password: 'hunter2', encryption: 'WPA', hidden: false })).toBe(
-      'WIFI:T:WPA;S:MyNetwork;P:hunter2;;',
-    );
+    expect(
+      encodeWifi({ ssid: 'MyNetwork', password: 'hunter2', encryption: 'WPA', hidden: false }),
+    ).toBe('WIFI:T:WPA;S:MyNetwork;P:hunter2;;');
   });
 
   it('omits the password field entirely for open (nopass) networks', () => {
@@ -71,9 +71,9 @@ describe('encodeWifi', () => {
   });
 
   it('adds H:true; for hidden networks', () => {
-    expect(encodeWifi({ ssid: 'Hidden', encryption: 'WPA', password: 'x', hidden: true })).toContain(
-      'H:true;',
-    );
+    expect(
+      encodeWifi({ ssid: 'Hidden', encryption: 'WPA', password: 'x', hidden: true }),
+    ).toContain('H:true;');
   });
 
   it('escapes special characters in the SSID and password per the WIFI: QR spec', () => {
@@ -130,9 +130,9 @@ describe('encodeLocation', () => {
   });
 
   it('appends a URL-encoded query when a place name is given', () => {
-    expect(encodeLocation({ latitude: 40.7128, longitude: -74.006, query: 'Statue of Liberty' })).toBe(
-      'geo:40.7128,-74.006?q=Statue%20of%20Liberty',
-    );
+    expect(
+      encodeLocation({ latitude: 40.7128, longitude: -74.006, query: 'Statue of Liberty' }),
+    ).toBe('geo:40.7128,-74.006?q=Statue%20of%20Liberty');
   });
 });
 
@@ -149,7 +149,11 @@ describe('encodeEvent', () => {
   });
 
   it('formats an all-day event as a bare date (YYYYMMDD, no time/Z)', () => {
-    const result = encodeEvent({ title: 'Holiday', start: '2026-09-01T00:00:00.000Z', allDay: true });
+    const result = encodeEvent({
+      title: 'Holiday',
+      start: '2026-09-01T00:00:00.000Z',
+      allDay: true,
+    });
     expect(result).toContain('DTSTART:20260901\r\n');
   });
 
@@ -173,9 +177,9 @@ describe('encodeCrypto', () => {
   });
 
   it('appends amount and message as query params', () => {
-    expect(encodeCrypto({ currency: 'ETH', address: '0xabc', amount: 0.5, message: 'coffee' })).toBe(
-      'eth:0xabc?amount=0.5&message=coffee',
-    );
+    expect(
+      encodeCrypto({ currency: 'ETH', address: '0xabc', amount: 0.5, message: 'coffee' }),
+    ).toBe('eth:0xabc?amount=0.5&message=coffee');
   });
 });
 
@@ -226,9 +230,9 @@ describe('encodeStaticContent', () => {
   });
 
   it('throws for content types that require a dynamic QR code (need a landing page)', () => {
-    expect(() => encodeStaticContent(ContentType.PDF, { fileId: '11111111-1111-1111-1111-111111111111' })).toThrow(
-      /requires a dynamic QR code/,
-    );
+    expect(() =>
+      encodeStaticContent(ContentType.PDF, { fileId: '11111111-1111-1111-1111-111111111111' }),
+    ).toThrow(/requires a dynamic QR code/);
     expect(() =>
       encodeStaticContent(ContentType.IMAGE, { fileId: '11111111-1111-1111-1111-111111111111' }),
     ).toThrow(/requires a dynamic QR code/);

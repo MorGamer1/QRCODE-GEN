@@ -9,7 +9,14 @@ import { useForgotPassword } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { ArrowLeft, Loader2, MailCheck } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
@@ -39,8 +46,9 @@ export default function ForgotPasswordPage() {
           </div>
           <CardTitle className="text-2xl">Check your inbox</CardTitle>
           <CardDescription>
-            If an account exists for <span className="font-medium text-foreground">{submittedEmail}</span>, a
-            password reset link is on its way. The link expires in 1 hour.
+            If an account exists for{' '}
+            <span className="font-medium text-foreground">{submittedEmail}</span>, a password reset
+            link is on its way. The link expires in 1 hour.
           </CardDescription>
         </CardHeader>
         <CardFooter>
@@ -58,7 +66,9 @@ export default function ForgotPasswordPage() {
     <Card>
       <CardHeader>
         <CardTitle className="text-2xl">Forgot password</CardTitle>
-        <CardDescription>Enter your email and we&apos;ll send you a link to reset your password.</CardDescription>
+        <CardDescription>
+          Enter your email and we&apos;ll send you a link to reset your password.
+        </CardDescription>
       </CardHeader>
       <form onSubmit={onSubmit}>
         <CardContent className="space-y-4">

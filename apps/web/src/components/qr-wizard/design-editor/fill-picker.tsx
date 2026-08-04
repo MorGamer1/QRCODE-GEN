@@ -4,7 +4,13 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Plus, X } from 'lucide-react';
 import { GradientType, type Fill } from '@qrgen/shared';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 import { ColorInput } from './color-input';
@@ -53,14 +59,20 @@ export function FillPicker({ name, label, nullable, nullLabel = 'None' }: FillPi
                 <ModeButton active={mode === 'solid'} onClick={() => field.onChange(SOLID_DEFAULT)}>
                   Solid
                 </ModeButton>
-                <ModeButton active={mode === 'gradient'} onClick={() => field.onChange(GRADIENT_DEFAULT)}>
+                <ModeButton
+                  active={mode === 'gradient'}
+                  onClick={() => field.onChange(GRADIENT_DEFAULT)}
+                >
                   Gradient
                 </ModeButton>
               </div>
             </div>
 
             {value?.mode === 'solid' && (
-              <ColorInput value={value.color} onChange={(color) => field.onChange({ mode: 'solid', color })} />
+              <ColorInput
+                value={value.color}
+                onChange={(color) => field.onChange({ mode: 'solid', color })}
+              />
             )}
 
             {value?.mode === 'gradient' && (
@@ -68,7 +80,12 @@ export function FillPicker({ name, label, nullable, nullLabel = 'None' }: FillPi
                 <div className="flex items-center gap-3">
                   <Select
                     value={value.gradient.type}
-                    onValueChange={(type) => field.onChange({ ...value, gradient: { ...value.gradient, type: type as GradientType } })}
+                    onValueChange={(type) =>
+                      field.onChange({
+                        ...value,
+                        gradient: { ...value.gradient, type: type as GradientType },
+                      })
+                    }
                   >
                     <SelectTrigger className="w-28 shrink-0">
                       <SelectValue />
@@ -85,9 +102,13 @@ export function FillPicker({ name, label, nullable, nullLabel = 'None' }: FillPi
                         min={0}
                         max={360}
                         step={5}
-                        onValueChange={([rotation]) => field.onChange({ ...value, gradient: { ...value.gradient, rotation } })}
+                        onValueChange={([rotation]) =>
+                          field.onChange({ ...value, gradient: { ...value.gradient, rotation } })
+                        }
                       />
-                      <span className="w-10 shrink-0 text-right text-xs text-muted-foreground">{value.gradient.rotation}°</span>
+                      <span className="w-10 shrink-0 text-right text-xs text-muted-foreground">
+                        {value.gradient.rotation}°
+                      </span>
                     </div>
                   )}
                 </div>
@@ -99,7 +120,9 @@ export function FillPicker({ name, label, nullable, nullLabel = 'None' }: FillPi
                       <ColorInput
                         value={stop.color}
                         onChange={(color) => {
-                          const stops = value.gradient.stops.map((s, si) => (si === i ? { ...s, color } : s));
+                          const stops = value.gradient.stops.map((s, si) =>
+                            si === i ? { ...s, color } : s,
+                          );
                           field.onChange({ ...value, gradient: { ...value.gradient, stops } });
                         }}
                       />
@@ -109,7 +132,9 @@ export function FillPicker({ name, label, nullable, nullLabel = 'None' }: FillPi
                         min={0}
                         max={100}
                         onValueChange={([offset = 0]) => {
-                          const stops = value.gradient.stops.map((s, si) => (si === i ? { ...s, offset: offset / 100 } : s));
+                          const stops = value.gradient.stops.map((s, si) =>
+                            si === i ? { ...s, offset: offset / 100 } : s,
+                          );
                           field.onChange({ ...value, gradient: { ...value.gradient, stops } });
                         }}
                       />
@@ -152,7 +177,15 @@ export function FillPicker({ name, label, nullable, nullLabel = 'None' }: FillPi
   );
 }
 
-function ModeButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function ModeButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"

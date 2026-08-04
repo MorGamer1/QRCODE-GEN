@@ -14,7 +14,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { PasswordInput } from '@/components/auth/password-input';
 import { OAuthButtons } from '@/components/auth/oauth-buttons';
 import { AuthCardSkeleton } from '@/components/auth/auth-card-skeleton';
@@ -111,14 +118,18 @@ function LoginForm() {
                   disabled={login.isPending}
                   {...register('password')}
                 />
-                {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+                {errors.password && (
+                  <p className="text-xs text-destructive">{errors.password.message}</p>
+                )}
               </div>
             </>
           )}
 
           {needsTwoFactor && (
             <div className="space-y-2">
-              <Label htmlFor="twoFactorField">{useRecoveryCode ? 'Recovery code' : 'Authentication code'}</Label>
+              <Label htmlFor="twoFactorField">
+                {useRecoveryCode ? 'Recovery code' : 'Authentication code'}
+              </Label>
               {useRecoveryCode ? (
                 <Input
                   id="twoFactorField"
@@ -140,14 +151,18 @@ function LoginForm() {
                 />
               )}
               {(errors.twoFactorCode || errors.recoveryCode) && (
-                <p className="text-xs text-destructive">{errors.twoFactorCode?.message ?? errors.recoveryCode?.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.twoFactorCode?.message ?? errors.recoveryCode?.message}
+                </p>
               )}
               <button
                 type="button"
                 className="text-xs text-primary hover:underline"
                 onClick={() => setUseRecoveryCode((v) => !v)}
               >
-                {useRecoveryCode ? 'Use an authentication code instead' : 'Use a recovery code instead'}
+                {useRecoveryCode
+                  ? 'Use an authentication code instead'
+                  : 'Use a recovery code instead'}
               </button>
             </div>
           )}

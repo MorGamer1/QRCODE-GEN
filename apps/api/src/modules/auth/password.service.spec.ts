@@ -20,7 +20,10 @@ describe('PasswordService', () => {
     });
 
     it('produces different hashes for the same input (random salt)', async () => {
-      const [a, b] = await Promise.all([service.hash('same password'), service.hash('same password')]);
+      const [a, b] = await Promise.all([
+        service.hash('same password'),
+        service.hash('same password'),
+      ]);
       expect(a).not.toBe(b);
     });
 

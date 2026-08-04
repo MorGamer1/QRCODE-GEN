@@ -7,7 +7,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Admin</h1>
-          <p className="text-sm text-muted-foreground">Platform-wide oversight and configuration.</p>
+          <p className="text-sm text-muted-foreground">
+            Platform-wide oversight and configuration.
+          </p>
         </div>
         <AdminSubNav />
         {children}

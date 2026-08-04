@@ -11,7 +11,11 @@ export const MODULE_SHAPE_OPTIONS: ShapeOption[] = [
   { value: ModuleShape.ROUNDED, label: 'Rounded', previewClassName: 'rounded-md' },
   { value: ModuleShape.DOTS, label: 'Dots', previewClassName: 'rounded-full' },
   { value: ModuleShape.CLASSY, label: 'Classy', previewClassName: 'rounded-tl-lg rounded-br-lg' },
-  { value: ModuleShape.CLASSY_ROUNDED, label: 'Classy Rounded', previewClassName: 'rounded-tl-xl rounded-br-xl' },
+  {
+    value: ModuleShape.CLASSY_ROUNDED,
+    label: 'Classy Rounded',
+    previewClassName: 'rounded-tl-xl rounded-br-xl',
+  },
   { value: ModuleShape.EXTRA_ROUNDED, label: 'Extra Rounded', previewClassName: 'rounded-xl' },
 ];
 

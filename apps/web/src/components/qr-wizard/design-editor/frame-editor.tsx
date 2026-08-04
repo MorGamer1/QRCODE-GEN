@@ -4,7 +4,13 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { FrameStyle, type FrameOptions } from '@qrgen/shared';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ColorInput } from './color-input';
 
 const FRAME_STYLE_OPTIONS = [
@@ -78,11 +84,17 @@ export function FrameEditor() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <Label className="text-sm font-normal">Frame color</Label>
-                    <ColorInput value={frame.color} onChange={(color) => field.onChange({ ...frame, color })} />
+                    <ColorInput
+                      value={frame.color}
+                      onChange={(color) => field.onChange({ ...frame, color })}
+                    />
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-sm font-normal">Text color</Label>
-                    <ColorInput value={frame.textColor} onChange={(textColor) => field.onChange({ ...frame, textColor })} />
+                    <ColorInput
+                      value={frame.textColor}
+                      onChange={(textColor) => field.onChange({ ...frame, textColor })}
+                    />
                   </div>
                 </div>
               </div>

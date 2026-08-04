@@ -12,7 +12,15 @@ import { ScanTimeseriesChart } from './scan-timeseries-chart';
 import { BreakdownTabs } from './breakdown-tabs';
 import { ScanListTable } from './scan-list-table';
 
-export function QrAnalyticsPanel({ qrId, totalScans, uniqueScans }: { qrId: string; totalScans: number; uniqueScans: number }) {
+export function QrAnalyticsPanel({
+  qrId,
+  totalScans,
+  uniqueScans,
+}: {
+  qrId: string;
+  totalScans: number;
+  uniqueScans: number;
+}) {
   const [preset, setPreset] = React.useState<RangePreset>('30d');
   const range = React.useMemo(() => resolveRangePreset(preset), [preset]);
   const timeseries = useQrTimeseries(qrId, range);
@@ -41,7 +49,11 @@ export function QrAnalyticsPanel({ qrId, totalScans, uniqueScans }: { qrId: stri
           </div>
         </div>
 
-        {timeseries.isPending ? <Skeleton className="h-72 w-full" /> : <ScanTimeseriesChart data={timeseries.data ?? []} />}
+        {timeseries.isPending ? (
+          <Skeleton className="h-72 w-full" />
+        ) : (
+          <ScanTimeseriesChart data={timeseries.data ?? []} />
+        )}
 
         <BreakdownTabs qrId={qrId} range={range} />
 

@@ -8,7 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { QrCard } from '@/components/qr-management/qr-card';
-import { QrFiltersToolbar, DEFAULT_FILTERS, type QrFilters } from '@/components/qr-management/qr-filters-toolbar';
+import {
+  QrFiltersToolbar,
+  DEFAULT_FILTERS,
+  type QrFilters,
+} from '@/components/qr-management/qr-filters-toolbar';
 import { BulkActionsBar } from '@/components/qr-management/bulk-actions-bar';
 
 const PAGE_SIZE = 24;
@@ -51,7 +55,9 @@ export default function QrCodesPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">QR Codes</h1>
           <p className="text-sm text-muted-foreground">
-            {query.data ? `${query.data.total} QR code${query.data.total === 1 ? '' : 's'}` : 'Manage your QR codes'}
+            {query.data
+              ? `${query.data.total} QR code${query.data.total === 1 ? '' : 's'}`
+              : 'Manage your QR codes'}
           </p>
         </div>
         <Button asChild>
@@ -65,7 +71,11 @@ export default function QrCodesPage() {
 
       {items.length > 0 && (
         <div className="flex items-center gap-2">
-          <Checkbox checked={allSelected} onCheckedChange={toggleSelectAll} aria-label="Select all on page" />
+          <Checkbox
+            checked={allSelected}
+            onCheckedChange={toggleSelectAll}
+            aria-label="Select all on page"
+          />
           <span className="text-sm text-muted-foreground">Select all on this page</span>
         </div>
       )}
@@ -86,7 +96,11 @@ export default function QrCodesPage() {
           <div>
             <p className="font-medium">No QR codes found</p>
             <p className="text-sm text-muted-foreground">
-              {filters.search || filters.categoryId || filters.type || filters.contentType || filters.isFavorite
+              {filters.search ||
+              filters.categoryId ||
+              filters.type ||
+              filters.contentType ||
+              filters.isFavorite
                 ? 'Try adjusting your filters.'
                 : 'Create your first QR code to get started.'}
             </p>
@@ -107,7 +121,9 @@ export default function QrCodesPage() {
               qr={qr}
               selected={selectedIds.includes(qr.id)}
               onSelectChange={(selected) =>
-                setSelectedIds((ids) => (selected ? [...ids, qr.id] : ids.filter((id) => id !== qr.id)))
+                setSelectedIds((ids) =>
+                  selected ? [...ids, qr.id] : ids.filter((id) => id !== qr.id),
+                )
               }
             />
           ))}
@@ -116,13 +132,23 @@ export default function QrCodesPage() {
 
       {query.data && query.data.totalPages > 1 && (
         <div className="flex items-center justify-center gap-3">
-          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
             <ChevronLeft className="h-4 w-4" /> Previous
           </Button>
           <span className="text-sm text-muted-foreground">
             Page {query.data.page} of {query.data.totalPages}
           </span>
-          <Button variant="outline" size="sm" disabled={page >= query.data.totalPages} onClick={() => setPage((p) => p + 1)}>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page >= query.data.totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
             Next <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

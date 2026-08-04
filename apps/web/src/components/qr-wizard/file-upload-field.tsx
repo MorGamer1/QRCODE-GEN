@@ -27,7 +27,15 @@ function readAsDataUri(file: File): Promise<string> {
   });
 }
 
-export function FileUploadField({ purpose, accept, maxSizeBytes, value, fileName, onChange, helperText }: FileUploadFieldProps) {
+export function FileUploadField({
+  purpose,
+  accept,
+  maxSizeBytes,
+  value,
+  fileName,
+  onChange,
+  helperText,
+}: FileUploadFieldProps) {
   const [isDragging, setIsDragging] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const upload = useUploadFile();
@@ -61,7 +69,13 @@ export function FileUploadField({ purpose, accept, maxSizeBytes, value, fileName
           <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
           <span className="truncate text-sm">{fileName ?? 'Uploaded file'}</span>
         </div>
-        <Button type="button" variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => onChange(null)}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 shrink-0"
+          onClick={() => onChange(null)}
+        >
           <X className="h-4 w-4" />
         </Button>
       </div>
@@ -91,7 +105,11 @@ export function FileUploadField({ purpose, accept, maxSizeBytes, value, fileName
         <Upload className="h-6 w-6 text-muted-foreground" />
       )}
       <p className="text-sm text-muted-foreground">
-        <button type="button" className="font-medium text-primary hover:underline" onClick={() => inputRef.current?.click()}>
+        <button
+          type="button"
+          className="font-medium text-primary hover:underline"
+          onClick={() => inputRef.current?.click()}
+        >
           Click to upload
         </button>{' '}
         or drag and drop

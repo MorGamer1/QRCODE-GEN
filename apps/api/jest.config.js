@@ -7,6 +7,12 @@ module.exports = {
   transform: {
     '^.+\\.(t|j)s$': ['ts-jest', { tsconfig: '<rootDir>/../tsconfig.json' }],
   },
-  collectCoverageFrom: ['**/*.(t|j)s', '!**/*.spec.ts', '!**/*.module.ts', '!main.ts', '!worker.ts'],
+  collectCoverageFrom: [
+    '**/*.(t|j)s',
+    '!**/*.spec.ts',
+    '!**/*.module.ts',
+    '!main.ts',
+    '!worker.ts',
+  ],
   coverageDirectory: '../coverage',
 };

@@ -76,7 +76,9 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     let details: unknown;
     try {
       const errBody = await res.json();
-      message = Array.isArray(errBody.message) ? errBody.message.join(', ') : (errBody.message ?? message);
+      message = Array.isArray(errBody.message)
+        ? errBody.message.join(', ')
+        : (errBody.message ?? message);
       details = errBody;
     } catch {
       // response wasn't JSON - keep the statusText message
@@ -91,12 +93,13 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 }
 
 export const api = {
-  get: <T,>(path: string, params?: RequestOptions['params']) => request<T>(path, { method: 'GET', params }),
-  post: <T,>(path: string, body?: unknown, params?: RequestOptions['params']) =>
+  get: <T>(path: string, params?: RequestOptions['params']) =>
+    request<T>(path, { method: 'GET', params }),
+  post: <T>(path: string, body?: unknown, params?: RequestOptions['params']) =>
     request<T>(path, { method: 'POST', body, params }),
-  put: <T,>(path: string, body?: unknown) => request<T>(path, { method: 'PUT', body }),
-  patch: <T,>(path: string, body?: unknown) => request<T>(path, { method: 'PATCH', body }),
-  delete: <T,>(path: string, body?: unknown) => request<T>(path, { method: 'DELETE', body }),
+  put: <T>(path: string, body?: unknown) => request<T>(path, { method: 'PUT', body }),
+  patch: <T>(path: string, body?: unknown) => request<T>(path, { method: 'PATCH', body }),
+  delete: <T>(path: string, body?: unknown) => request<T>(path, { method: 'DELETE', body }),
 };
 
 /** Builds a same-origin URL for downloads/exports meant to be opened directly (not fetched via JS). */

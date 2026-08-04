@@ -26,18 +26,31 @@ export function ScanWorldMap({ rows }: { rows: BreakdownRow[] }) {
     return { countsByNumericId: map, max: maxCount };
   }, [rows]);
 
-  if (countsByNumericId.size === 0) return <ChartEmptyState message="No location data for this period yet" />;
+  if (countsByNumericId.size === 0)
+    return <ChartEmptyState message="No location data for this period yet" />;
 
   return (
     <div className="space-y-2">
-      <ComposableMap projectionConfig={{ scale: 140 }} width={800} height={420} style={{ width: '100%', height: 'auto' }}>
+      <ComposableMap
+        projectionConfig={{ scale: 140 }}
+        width={800}
+        height={420}
+        style={{ width: '100%', height: 'auto' }}
+      >
         <Geographies geography={GEO_URL}>
-          {({ geographies }: { geographies: Array<{ rsmKey: string; id: string; properties: { name?: string } }> }) =>
+          {({
+            geographies,
+          }: {
+            geographies: Array<{ rsmKey: string; id: string; properties: { name?: string } }>;
+          }) =>
             geographies.map((geo) => {
               const match = countsByNumericId.get(geo.id);
               const count = match?.count ?? 0;
               const opacity = count > 0 ? 0.2 + 0.8 * (count / max) : 0;
-              const name = countries.getName(match?.code.toUpperCase() ?? '', 'en') ?? geo.properties.name ?? 'Unknown';
+              const name =
+                countries.getName(match?.code.toUpperCase() ?? '', 'en') ??
+                geo.properties.name ??
+                'Unknown';
               return (
                 <Geography
                   key={geo.rsmKey}
@@ -69,7 +82,11 @@ export function ScanWorldMap({ rows }: { rows: BreakdownRow[] }) {
         <span>Fewer</span>
         <div className="flex h-2.5 w-24 overflow-hidden rounded-full">
           {[0.2, 0.4, 0.6, 0.8, 1].map((o) => (
-            <span key={o} className="flex-1" style={{ backgroundColor: `hsl(var(--chart-1) / ${o})` }} />
+            <span
+              key={o}
+              className="flex-1"
+              style={{ backgroundColor: `hsl(var(--chart-1) / ${o})` }}
+            />
           ))}
         </div>
         <span>More</span>

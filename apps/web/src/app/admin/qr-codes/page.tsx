@@ -12,7 +12,14 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,7 +44,11 @@ export default function AdminQrCodesPage() {
     return () => clearTimeout(handle);
   }, [searchDraft]);
 
-  const { data, isPending } = useAdminQrCodes({ page, pageSize: PAGE_SIZE, search: search || undefined });
+  const { data, isPending } = useAdminQrCodes({
+    page,
+    pageSize: PAGE_SIZE,
+    search: search || undefined,
+  });
   const deleteQr = useDeleteAdminQrCode();
 
   const handleDelete = () => {
@@ -56,9 +67,18 @@ export default function AdminQrCodesPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1 sm:max-w-xs">
           <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={searchDraft} onChange={(e) => setSearchDraft(e.target.value)} placeholder="Search by name or short code" className="pl-8" />
+          <Input
+            value={searchDraft}
+            onChange={(e) => setSearchDraft(e.target.value)}
+            placeholder="Search by name or short code"
+            className="pl-8"
+          />
         </div>
-        {data && <span className="text-sm text-muted-foreground sm:ml-auto">{formatNumber(data.total)} QR codes</span>}
+        {data && (
+          <span className="text-sm text-muted-foreground sm:ml-auto">
+            {formatNumber(data.total)} QR codes
+          </span>
+        )}
       </div>
 
       <div className="rounded-lg border">
@@ -95,7 +115,9 @@ export default function AdminQrCodesPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>{formatNumber(qr.totalScans)}</TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{formatDate(qr.createdAt)}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground">
+                    {formatDate(qr.createdAt)}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
@@ -121,29 +143,46 @@ export default function AdminQrCodesPage() {
 
       {data && data.totalPages > 1 && (
         <div className="flex items-center justify-center gap-3">
-          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
             <ChevronLeft className="h-4 w-4" /> Previous
           </Button>
           <span className="text-sm text-muted-foreground">
             Page {data.page} of {data.totalPages}
           </span>
-          <Button variant="outline" size="sm" disabled={page >= data.totalPages} onClick={() => setPage((p) => p + 1)}>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page >= data.totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
             Next <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       )}
 
-      <AlertDialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <AlertDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete &quot;{deleteTarget?.name}&quot;?</AlertDialogTitle>
             <AlertDialogDescription>
-              This permanently deletes the QR code, its short link, and all scan history for its owner. This can&apos;t be undone.
+              This permanently deletes the QR code, its short link, and all scan history for its
+              owner. This can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleDelete}>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDelete}
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

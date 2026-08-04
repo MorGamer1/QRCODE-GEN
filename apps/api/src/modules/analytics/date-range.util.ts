@@ -7,7 +7,9 @@ const DEFAULT_WINDOW_DAYS = 30;
 
 export function resolveDateRange(input: { from?: string; to?: string }): ResolvedRange {
   const to = input.to ? new Date(input.to) : new Date();
-  const from = input.from ? new Date(input.from) : new Date(to.getTime() - DEFAULT_WINDOW_DAYS * 86_400_000);
+  const from = input.from
+    ? new Date(input.from)
+    : new Date(to.getTime() - DEFAULT_WINDOW_DAYS * 86_400_000);
   return { from, to };
 }
 
@@ -37,10 +39,14 @@ export interface BucketPoint {
 }
 
 /** Re-buckets daily rollup rows into week/month/year points for chart display. */
-export function bucketDaily(rows: DailyPoint[], granularity: 'week' | 'month' | 'year'): BucketPoint[] {
+export function bucketDaily(
+  rows: DailyPoint[],
+  granularity: 'week' | 'month' | 'year',
+): BucketPoint[] {
   const keyFor = (date: Date): string => {
     if (granularity === 'week') return isoWeekKey(date);
-    if (granularity === 'month') return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
+    if (granularity === 'month')
+      return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
     return `${date.getUTCFullYear()}`;
   };
 

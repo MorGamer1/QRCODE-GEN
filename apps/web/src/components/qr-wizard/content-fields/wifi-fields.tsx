@@ -4,7 +4,13 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { PasswordInput } from '@/components/auth/password-input';
 import { Field, getFieldError } from './shared';
 
@@ -21,7 +27,11 @@ export function WifiFields({ prefix }: { prefix: string }) {
 
   return (
     <div className="space-y-4">
-      <Field id="c-ssid" label="Network name (SSID)" error={getFieldError(errors, `${prefix}.ssid`)}>
+      <Field
+        id="c-ssid"
+        label="Network name (SSID)"
+        error={getFieldError(errors, `${prefix}.ssid`)}
+      >
         <Input id="c-ssid" placeholder="My Wi-Fi Network" {...register(`${prefix}.ssid`)} />
       </Field>
 
@@ -48,7 +58,11 @@ export function WifiFields({ prefix }: { prefix: string }) {
       </Field>
 
       {encryption !== 'nopass' && (
-        <Field id="c-wifi-password" label="Password" error={getFieldError(errors, `${prefix}.password`)}>
+        <Field
+          id="c-wifi-password"
+          label="Password"
+          error={getFieldError(errors, `${prefix}.password`)}
+        >
           <PasswordInput id="c-wifi-password" {...register(`${prefix}.password`)} />
         </Field>
       )}

@@ -6,7 +6,13 @@ import { ContentType, QrCodeType } from '@qrgen/shared';
 import { useCategories } from '@/hooks/use-categories';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { CONTENT_TYPE_LABELS } from './content-type-labels';
 
 export interface QrFilters {
@@ -40,7 +46,13 @@ const SORT_OPTIONS: { value: string; label: string }[] = [
   { value: 'lastScannedAt:desc', label: 'Recently scanned' },
 ];
 
-export function QrFiltersToolbar({ filters, onChange }: { filters: QrFilters; onChange: (filters: QrFilters) => void }) {
+export function QrFiltersToolbar({
+  filters,
+  onChange,
+}: {
+  filters: QrFilters;
+  onChange: (filters: QrFilters) => void;
+}) {
   const { data: categories } = useCategories();
   const [searchDraft, setSearchDraft] = React.useState(filters.search);
 
@@ -81,7 +93,12 @@ export function QrFiltersToolbar({ filters, onChange }: { filters: QrFilters; on
         </SelectContent>
       </Select>
 
-      <Select value={filters.type ?? ALL_VALUE} onValueChange={(v) => onChange({ ...filters, type: v === ALL_VALUE ? undefined : (v as QrCodeType) })}>
+      <Select
+        value={filters.type ?? ALL_VALUE}
+        onValueChange={(v) =>
+          onChange({ ...filters, type: v === ALL_VALUE ? undefined : (v as QrCodeType) })
+        }
+      >
         <SelectTrigger className="sm:w-32">
           <SelectValue placeholder="Type" />
         </SelectTrigger>
@@ -94,7 +111,9 @@ export function QrFiltersToolbar({ filters, onChange }: { filters: QrFilters; on
 
       <Select
         value={filters.contentType ?? ALL_VALUE}
-        onValueChange={(v) => onChange({ ...filters, contentType: v === ALL_VALUE ? undefined : (v as ContentType) })}
+        onValueChange={(v) =>
+          onChange({ ...filters, contentType: v === ALL_VALUE ? undefined : (v as ContentType) })
+        }
       >
         <SelectTrigger className="sm:w-40">
           <SelectValue placeholder="Content" />
@@ -138,7 +157,12 @@ export function QrFiltersToolbar({ filters, onChange }: { filters: QrFilters; on
         <Star className={filters.isFavorite ? 'h-4 w-4 fill-current' : 'h-4 w-4'} />
       </Button>
 
-      <Button type="button" variant={filters.isArchived ? 'default' : 'outline'} size="sm" onClick={() => onChange({ ...filters, isArchived: !filters.isArchived })}>
+      <Button
+        type="button"
+        variant={filters.isArchived ? 'default' : 'outline'}
+        size="sm"
+        onClick={() => onChange({ ...filters, isArchived: !filters.isArchived })}
+      >
         {filters.isArchived ? 'Showing archived' : 'Show archived'}
       </Button>
     </div>

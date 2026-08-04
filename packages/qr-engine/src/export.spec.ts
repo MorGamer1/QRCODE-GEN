@@ -1,5 +1,11 @@
 import sharp from 'sharp';
-import { BinaryBitmap, Exception, HybridBinarizer, QRCodeReader, RGBLuminanceSource } from '@zxing/library';
+import {
+  BinaryBitmap,
+  Exception,
+  HybridBinarizer,
+  QRCodeReader,
+  RGBLuminanceSource,
+} from '@zxing/library';
 import {
   ErrorCorrectionLevel,
   EyeBallShape,
@@ -23,7 +29,10 @@ const TEXT = 'https://qr.example.com/r/AbC1234';
  * scan, rather than quirks of any one lightweight reference decoder.
  */
 async function decodePng(buffer: Buffer): Promise<string | null> {
-  const { data, info } = await sharp(buffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const { data, info } = await sharp(buffer)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
   const pixels = new Int32Array(info.width * info.height);
   for (let i = 0; i < pixels.length; i += 1) {
     const r = data[i * 4];
@@ -51,21 +60,27 @@ describe('QR round trip (scene -> PNG -> scan)', () => {
     await expect(decodePng(png)).resolves.toBe(TEXT);
   });
 
-  it.each(Object.values(ModuleShape))('scans correctly for module shape %s', async (moduleShape) => {
-    const scene = buildQrScene(TEXT, parseQrDesign({ size: 512, moduleShape }));
-    const png = await renderScenePng(scene);
-    await expect(decodePng(png)).resolves.toBe(TEXT);
-  });
+  it.each(Object.values(ModuleShape))(
+    'scans correctly for module shape %s',
+    async (moduleShape) => {
+      const scene = buildQrScene(TEXT, parseQrDesign({ size: 512, moduleShape }));
+      const png = await renderScenePng(scene);
+      await expect(decodePng(png)).resolves.toBe(TEXT);
+    },
+  );
 
   const eyeCombos = Object.values(EyeFrameShape).flatMap((eyeFrameShape) =>
     Object.values(EyeBallShape).map((eyeBallShape) => [eyeFrameShape, eyeBallShape] as const),
   );
 
-  it.each(eyeCombos)('scans correctly for eye frame=%s ball=%s', async (eyeFrameShape, eyeBallShape) => {
-    const scene = buildQrScene(TEXT, parseQrDesign({ size: 512, eyeFrameShape, eyeBallShape }));
-    const png = await renderScenePng(scene);
-    await expect(decodePng(png)).resolves.toBe(TEXT);
-  });
+  it.each(eyeCombos)(
+    'scans correctly for eye frame=%s ball=%s',
+    async (eyeFrameShape, eyeBallShape) => {
+      const scene = buildQrScene(TEXT, parseQrDesign({ size: 512, eyeFrameShape, eyeBallShape }));
+      const png = await renderScenePng(scene);
+      await expect(decodePng(png)).resolves.toBe(TEXT);
+    },
+  );
 
   it('still scans with a centered logo excavated at high error correction', async () => {
     // 1x1 red pixel PNG, enough for the renderer - visual fidelity of the logo isn't under test here.

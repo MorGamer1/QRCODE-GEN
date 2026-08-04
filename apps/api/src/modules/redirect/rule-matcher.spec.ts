@@ -18,9 +18,9 @@ describe('ruleMatches / DEVICE', () => {
   });
 
   it('does not match when no devices are configured', () => {
-    expect(ruleMatches({ type: RedirectRuleType.DEVICE, condition: {} }, ctx({ platform: 'ios' }))).toBe(
-      false,
-    );
+    expect(
+      ruleMatches({ type: RedirectRuleType.DEVICE, condition: {} }, ctx({ platform: 'ios' })),
+    ).toBe(false);
   });
 });
 

@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Query, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { CurrentUser, type RequestUser } from '../../common/decorators/current-user.decorator';
@@ -41,17 +54,29 @@ export class QrCodesController {
   }
 
   @Patch(':id/meta')
-  updateMeta(@CurrentUser() user: RequestUser, @Param('id') id: string, @Body() dto: UpdateQrMetaDto) {
+  updateMeta(
+    @CurrentUser() user: RequestUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateQrMetaDto,
+  ) {
     return this.qrCodesService.updateMeta(user.id, id, dto);
   }
 
   @Put(':id/design')
-  updateDesign(@CurrentUser() user: RequestUser, @Param('id') id: string, @Body() dto: UpdateQrDesignDto) {
+  updateDesign(
+    @CurrentUser() user: RequestUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateQrDesignDto,
+  ) {
     return this.qrCodesService.updateDesign(user.id, id, dto);
   }
 
   @Put(':id/content')
-  updateContent(@CurrentUser() user: RequestUser, @Param('id') id: string, @Body() dto: UpdateQrContentDto) {
+  updateContent(
+    @CurrentUser() user: RequestUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateQrContentDto,
+  ) {
     return this.qrCodesService.updateContent(user.id, id, dto);
   }
 
@@ -65,7 +90,11 @@ export class QrCodesController {
   }
 
   @Post(':id/duplicate')
-  duplicate(@CurrentUser() user: RequestUser, @Param('id') id: string, @Body() dto: DuplicateQrDto) {
+  duplicate(
+    @CurrentUser() user: RequestUser,
+    @Param('id') id: string,
+    @Body() dto: DuplicateQrDto,
+  ) {
     return this.qrCodesService.duplicate(user.id, id, dto);
   }
 

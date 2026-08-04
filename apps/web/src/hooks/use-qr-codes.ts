@@ -22,7 +22,11 @@ export const qrCodeKeys = {
 export function useQrCodes(query: Partial<ListQrQueryDto>) {
   return useQuery({
     queryKey: qrCodeKeys.list(query),
-    queryFn: () => api.get<PaginatedResult<QrCode>>('/qr-codes', query as Record<string, string | number | boolean | undefined>),
+    queryFn: () =>
+      api.get<PaginatedResult<QrCode>>(
+        '/qr-codes',
+        query as Record<string, string | number | boolean | undefined>,
+      ),
     placeholderData: (prev) => prev,
   });
 }
@@ -85,7 +89,8 @@ export function useUpdateQrContent(id: string) {
 export function useUpdateRedirectSettings(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (dto: RedirectSettingsDto) => api.put<QrCode>(`/qr-codes/${id}/redirect-settings`, dto),
+    mutationFn: (dto: RedirectSettingsDto) =>
+      api.put<QrCode>(`/qr-codes/${id}/redirect-settings`, dto),
     onSuccess: (qr) => queryClient.setQueryData(qrCodeKeys.detail(id), qr),
   });
 }
@@ -93,7 +98,8 @@ export function useUpdateRedirectSettings(id: string) {
 export function useDuplicateQrCode() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, dto }: { id: string; dto: DuplicateQrDto }) => api.post<QrCode>(`/qr-codes/${id}/duplicate`, dto),
+    mutationFn: ({ id, dto }: { id: string; dto: DuplicateQrDto }) =>
+      api.post<QrCode>(`/qr-codes/${id}/duplicate`, dto),
     onSuccess: (qr) => {
       queryClient.setQueryData(qrCodeKeys.detail(qr.id), qr);
       queryClient.invalidateQueries({ queryKey: qrCodeKeys.all, exact: false });

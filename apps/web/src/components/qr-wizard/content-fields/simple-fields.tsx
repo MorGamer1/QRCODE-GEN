@@ -9,7 +9,12 @@ export function UrlFields({ prefix }: { prefix: string }) {
   const { register, formState } = useFormContext();
   return (
     <Field id="c-url" label="Website URL" error={getFieldError(formState.errors, `${prefix}.url`)}>
-      <Input id="c-url" type="url" placeholder="https://example.com" {...register(`${prefix}.url`)} />
+      <Input
+        id="c-url"
+        type="url"
+        placeholder="https://example.com"
+        {...register(`${prefix}.url`)}
+      />
     </Field>
   );
 }
@@ -18,7 +23,12 @@ export function TextFields({ prefix }: { prefix: string }) {
   const { register, formState } = useFormContext();
   return (
     <Field id="c-text" label="Text" error={getFieldError(formState.errors, `${prefix}.text`)}>
-      <Textarea id="c-text" rows={5} placeholder="Anything you want to display" {...register(`${prefix}.text`)} />
+      <Textarea
+        id="c-text"
+        rows={5}
+        placeholder="Anything you want to display"
+        {...register(`${prefix}.text`)}
+      />
     </Field>
   );
 }

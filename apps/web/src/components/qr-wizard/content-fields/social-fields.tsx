@@ -2,7 +2,13 @@
 
 import { Controller, useFormContext } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Field, getFieldError } from './shared';
 
 const PLATFORMS = [
@@ -52,10 +58,24 @@ export function SocialFields({ prefix }: { prefix: string }) {
         />
       </Field>
       <Field id="c-url" label="Profile URL" error={getFieldError(errors, `${prefix}.url`)}>
-        <Input id="c-url" type="url" placeholder="https://instagram.com/yourhandle" {...register(`${prefix}.url`)} />
+        <Input
+          id="c-url"
+          type="url"
+          placeholder="https://instagram.com/yourhandle"
+          {...register(`${prefix}.url`)}
+        />
       </Field>
-      <Field id="c-displayName" label="Display name" optional error={getFieldError(errors, `${prefix}.displayName`)}>
-        <Input id="c-displayName" placeholder="@yourhandle" {...register(`${prefix}.displayName`)} />
+      <Field
+        id="c-displayName"
+        label="Display name"
+        optional
+        error={getFieldError(errors, `${prefix}.displayName`)}
+      >
+        <Input
+          id="c-displayName"
+          placeholder="@yourhandle"
+          {...register(`${prefix}.displayName`)}
+        />
       </Field>
     </div>
   );

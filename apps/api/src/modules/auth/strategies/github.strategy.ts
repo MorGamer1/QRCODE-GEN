@@ -31,10 +31,19 @@ export class GithubStrategy extends PassportStrategy(GitHubStrategy, 'github') {
     });
   }
 
-  async validate(_accessToken: string, _refreshToken: string, profile: GitHubProfile, done: Done): Promise<void> {
+  async validate(
+    _accessToken: string,
+    _refreshToken: string,
+    profile: GitHubProfile,
+    done: Done,
+  ): Promise<void> {
     const email = profile.emails?.[0]?.value;
     if (!email) {
-      done(new Error('GitHub account has no accessible email address - make your primary email public'));
+      done(
+        new Error(
+          'GitHub account has no accessible email address - make your primary email public',
+        ),
+      );
       return;
     }
     const user = await this.authService.findOrCreateOAuthUser({

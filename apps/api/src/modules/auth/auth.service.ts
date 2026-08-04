@@ -27,7 +27,8 @@ export interface RequestMeta {
 
 export type SafeUser = Omit<User, 'passwordHash' | 'twoFactorSecret'>;
 
-export type LoginResult = { status: 'ok'; user: SafeUser; tokens: IssuedTokens } | { status: 'twoFactorRequired' };
+export type LoginResult =
+  { status: 'ok'; user: SafeUser; tokens: IssuedTokens } | { status: 'twoFactorRequired' };
 
 @Injectable()
 export class AuthService {
@@ -70,7 +71,11 @@ export class AuthService {
       },
     });
 
-    this.audit.record({ userId: user.id, action: AuditAction.USER_REGISTER, ipAddress: meta.ipAddress });
+    this.audit.record({
+      userId: user.id,
+      action: AuditAction.USER_REGISTER,
+      ipAddress: meta.ipAddress,
+    });
     await this.sendVerificationEmail(user);
 
     if (settings.requireEmailVerification) {
@@ -82,8 +87,16 @@ export class AuthService {
 
   async login(dto: LoginDto, meta: RequestMeta): Promise<LoginResult> {
     const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
-    if (!user || !user.passwordHash || !(await this.passwords.verify(user.passwordHash, dto.password))) {
-      this.audit.record({ action: AuditAction.USER_LOGIN_FAILED, metadata: { email: dto.email }, ipAddress: meta.ipAddress });
+    if (
+      !user ||
+      !user.passwordHash ||
+      !(await this.passwords.verify(user.passwordHash, dto.password))
+    ) {
+      this.audit.record({
+        action: AuditAction.USER_LOGIN_FAILED,
+        metadata: { email: dto.email },
+        ipAddress: meta.ipAddress,
+      });
       throw new UnauthorizedException('Invalid email or password');
     }
     if (user.isSuspended) throw new ForbiddenException('This account has been suspended');
@@ -95,17 +108,28 @@ export class AuthService {
 
     if (user.twoFactorEnabled) {
       const verified =
-        (dto.twoFactorCode && user.twoFactorSecret && this.twoFactor.verifyToken(dto.twoFactorCode, user.twoFactorSecret)) ||
+        (dto.twoFactorCode &&
+          user.twoFactorSecret &&
+          this.twoFactor.verifyToken(dto.twoFactorCode, user.twoFactorSecret)) ||
         (dto.recoveryCode && (await this.twoFactor.consumeRecoveryCode(user.id, dto.recoveryCode)));
       if (!verified) {
         if (!dto.twoFactorCode && !dto.recoveryCode) return { status: 'twoFactorRequired' };
-        this.audit.record({ userId: user.id, action: AuditAction.USER_LOGIN_FAILED, ipAddress: meta.ipAddress });
+        this.audit.record({
+          userId: user.id,
+          action: AuditAction.USER_LOGIN_FAILED,
+          ipAddress: meta.ipAddress,
+        });
         throw new UnauthorizedException('Invalid two-factor code');
       }
     }
 
     await this.prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
-    this.audit.record({ userId: user.id, action: AuditAction.USER_LOGIN, ipAddress: meta.ipAddress, userAgent: meta.userAgent });
+    this.audit.record({
+      userId: user.id,
+      action: AuditAction.USER_LOGIN,
+      ipAddress: meta.ipAddress,
+      userAgent: meta.userAgent,
+    });
 
     const tokens = await this.tokens.issueSession(user, meta);
     return { status: 'ok', user: this.sanitize(user), tokens };
@@ -139,7 +163,9 @@ export class AuthService {
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
-    const record = await this.prisma.passwordResetToken.findUnique({ where: { tokenHash: this.hashToken(token) } });
+    const record = await this.prisma.passwordResetToken.findUnique({
+      where: { tokenHash: this.hashToken(token) },
+    });
     if (!record || record.usedAt || record.expiresAt < new Date()) {
       throw new BadRequestException('This password reset link is invalid or has expired');
     }
@@ -147,14 +173,21 @@ export class AuthService {
     const passwordHash = await this.passwords.hash(newPassword);
     await this.prisma.$transaction([
       this.prisma.user.update({ where: { id: record.userId }, data: { passwordHash } }),
-      this.prisma.passwordResetToken.update({ where: { id: record.id }, data: { usedAt: new Date() } }),
+      this.prisma.passwordResetToken.update({
+        where: { id: record.id },
+        data: { usedAt: new Date() },
+      }),
     ]);
     await this.tokens.revokeAllSessionsForUser(record.userId);
     await this.redis.del(`user:${record.userId}`);
     this.audit.record({ userId: record.userId, action: AuditAction.USER_PASSWORD_RESET });
   }
 
-  async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
     if (!user.passwordHash || !(await this.passwords.verify(user.passwordHash, currentPassword))) {
       throw new UnauthorizedException('Current password is incorrect');
@@ -178,13 +211,18 @@ export class AuthService {
   }
 
   async verifyEmail(token: string): Promise<void> {
-    const record = await this.prisma.emailVerificationToken.findUnique({ where: { tokenHash: this.hashToken(token) } });
+    const record = await this.prisma.emailVerificationToken.findUnique({
+      where: { tokenHash: this.hashToken(token) },
+    });
     if (!record || record.usedAt || record.expiresAt < new Date()) {
       throw new BadRequestException('This verification link is invalid or has expired');
     }
     await this.prisma.$transaction([
       this.prisma.user.update({ where: { id: record.userId }, data: { emailVerified: true } }),
-      this.prisma.emailVerificationToken.update({ where: { id: record.id }, data: { usedAt: new Date() } }),
+      this.prisma.emailVerificationToken.update({
+        where: { id: record.id },
+        data: { usedAt: new Date() },
+      }),
     ]);
     await this.redis.del(`user:${record.userId}`);
   }
@@ -218,7 +256,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid verification code');
     }
     await this.prisma.$transaction([
-      this.prisma.user.update({ where: { id: userId }, data: { twoFactorEnabled: false, twoFactorSecret: null } }),
+      this.prisma.user.update({
+        where: { id: userId },
+        data: { twoFactorEnabled: false, twoFactorSecret: null },
+      }),
       this.prisma.twoFactorRecoveryCode.deleteMany({ where: { userId } }),
     ]);
     await this.redis.del(`user:${userId}`);
@@ -233,7 +274,12 @@ export class AuthService {
     avatarUrl?: string;
   }): Promise<SafeUser> {
     const account = await this.prisma.account.findUnique({
-      where: { provider_providerAccountId: { provider: input.provider, providerAccountId: input.providerAccountId } },
+      where: {
+        provider_providerAccountId: {
+          provider: input.provider,
+          providerAccountId: input.providerAccountId,
+        },
+      },
       include: { user: true },
     });
     if (account) return this.sanitize(account.user);
@@ -242,11 +288,20 @@ export class AuthService {
     const user =
       existingUser ??
       (await this.prisma.user.create({
-        data: { email: input.email, name: input.name, avatarUrl: input.avatarUrl, emailVerified: true },
+        data: {
+          email: input.email,
+          name: input.name,
+          avatarUrl: input.avatarUrl,
+          emailVerified: true,
+        },
       }));
 
     await this.prisma.account.create({
-      data: { userId: user.id, provider: input.provider, providerAccountId: input.providerAccountId },
+      data: {
+        userId: user.id,
+        provider: input.provider,
+        providerAccountId: input.providerAccountId,
+      },
     });
     return this.sanitize(user);
   }

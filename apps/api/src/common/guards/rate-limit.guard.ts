@@ -1,9 +1,19 @@
-import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { RATE_LIMIT } from '@qrgen/shared';
 import type { Request } from 'express';
 import { RedisService } from '../redis/redis.service';
-import { RATE_LIMIT_KEY, RateLimitOptions, SKIP_RATE_LIMIT_KEY } from '../decorators/rate-limit.decorator';
+import {
+  RATE_LIMIT_KEY,
+  RateLimitOptions,
+  SKIP_RATE_LIMIT_KEY,
+} from '../decorators/rate-limit.decorator';
 
 interface AuthenticatedRequest extends Request {
   user?: { id: string };
@@ -43,7 +53,10 @@ export class RateLimitGuard implements CanActivate {
 
     const count = await this.redis.incrWithExpiry(key, options.ttlSeconds);
     if (count > options.limit) {
-      throw new HttpException('Too many requests, please try again later', HttpStatus.TOO_MANY_REQUESTS);
+      throw new HttpException(
+        'Too many requests, please try again later',
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
     }
     return true;
   }

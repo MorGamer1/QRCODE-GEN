@@ -12,8 +12,8 @@ export function CustomFields({ prefix }: { prefix: string }) {
   return (
     <div className="space-y-4">
       <p className="text-xs text-muted-foreground">
-        A simple landing page for cases the other content types don&apos;t cover. For structured key/value payloads,
-        use the API directly.
+        A simple landing page for cases the other content types don&apos;t cover. For structured
+        key/value payloads, use the API directly.
       </p>
       <Field id="c-title" label="Title" optional error={getFieldError(errors, `${prefix}.title`)}>
         <Input id="c-title" {...register(`${prefix}.title`)} />
@@ -28,7 +28,12 @@ export function CustomFields({ prefix }: { prefix: string }) {
         hint="If set, visitors are sent straight here instead of seeing a landing page"
         error={getFieldError(errors, `${prefix}.redirectUrl`)}
       >
-        <Input id="c-redirectUrl" type="url" placeholder="https://example.com" {...register(`${prefix}.redirectUrl`)} />
+        <Input
+          id="c-redirectUrl"
+          type="url"
+          placeholder="https://example.com"
+          {...register(`${prefix}.redirectUrl`)}
+        />
       </Field>
     </div>
   );

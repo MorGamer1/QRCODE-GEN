@@ -1,6 +1,14 @@
 'use client';
 
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import type { TimeseriesPoint } from '@/lib/qr-types';
 import { ChartTooltip } from './chart-tooltip';
 import { ChartEmptyState } from './chart-empty-state';
@@ -19,8 +27,19 @@ export function ScanTimeseriesChart({ data }: { data: TimeseriesPoint[] }) {
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-        <XAxis dataKey="bucket" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} />
-        <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} width={36} allowDecimals={false} />
+        <XAxis
+          dataKey="bucket"
+          tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+          tickLine={false}
+          axisLine={false}
+        />
+        <YAxis
+          tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+          tickLine={false}
+          axisLine={false}
+          width={36}
+          allowDecimals={false}
+        />
         <Tooltip content={<ChartTooltip />} />
         <Area
           type="monotone"
@@ -30,7 +49,14 @@ export function ScanTimeseriesChart({ data }: { data: TimeseriesPoint[] }) {
           fill="url(#totalScansGradient)"
           strokeWidth={2}
         />
-        <Area type="monotone" dataKey="uniqueScans" name="Unique scans" stroke="hsl(var(--chart-2))" fill="transparent" strokeWidth={2} />
+        <Area
+          type="monotone"
+          dataKey="uniqueScans"
+          name="Unique scans"
+          stroke="hsl(var(--chart-2))"
+          fill="transparent"
+          strokeWidth={2}
+        />
       </AreaChart>
     </ResponsiveContainer>
   );

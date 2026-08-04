@@ -4,7 +4,15 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { cn } from '@/lib/utils';
 import type { ShapeOption } from './shape-options';
 
-export function ShapePicker({ name, label, options }: { name: string; label: string; options: ShapeOption[] }) {
+export function ShapePicker({
+  name,
+  label,
+  options,
+}: {
+  name: string;
+  label: string;
+  options: ShapeOption[];
+}) {
   const { control } = useFormContext();
   return (
     <div className="space-y-2">
@@ -21,11 +29,15 @@ export function ShapePicker({ name, label, options }: { name: string; label: str
                 onClick={() => field.onChange(opt.value)}
                 className={cn(
                   'flex flex-col items-center gap-1.5 rounded-lg border p-2.5 transition-colors',
-                  field.value === opt.value ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'hover:border-primary/40',
+                  field.value === opt.value
+                    ? 'border-primary bg-primary/5 ring-1 ring-primary'
+                    : 'hover:border-primary/40',
                 )}
               >
                 <span className={cn('h-6 w-6 bg-foreground', opt.previewClassName)} />
-                <span className="text-center text-[11px] leading-tight text-muted-foreground">{opt.label}</span>
+                <span className="text-center text-[11px] leading-tight text-muted-foreground">
+                  {opt.label}
+                </span>
               </button>
             ))}
           </div>

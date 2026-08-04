@@ -3,7 +3,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { api, apiDownloadUrl } from '@/lib/api-client';
 import type { ResolvedRange } from '@/lib/date-range-presets';
-import type { AnalyticsOverview, BreakdownDimension, BreakdownRow, PaginatedResult, QrSummary, Scan, TimeseriesPoint } from '@/lib/qr-types';
+import type {
+  AnalyticsOverview,
+  BreakdownDimension,
+  BreakdownRow,
+  PaginatedResult,
+  QrSummary,
+  Scan,
+  TimeseriesPoint,
+} from '@/lib/qr-types';
 
 type QueryParams = Record<string, string | number | boolean | undefined | null>;
 
@@ -25,23 +33,42 @@ export function useQrSummary(qrId: string | undefined) {
 export function useQrTimeseries(qrId: string | undefined, range: ResolvedRange) {
   return useQuery({
     queryKey: ['analytics', 'timeseries', qrId, range],
-    queryFn: () => api.get<TimeseriesPoint[]>(`/analytics/qr/${qrId}/timeseries`, { ...range } as QueryParams),
+    queryFn: () =>
+      api.get<TimeseriesPoint[]>(`/analytics/qr/${qrId}/timeseries`, { ...range } as QueryParams),
     enabled: Boolean(qrId),
   });
 }
 
-export function useQrBreakdown(qrId: string | undefined, dimension: BreakdownDimension, range: ResolvedRange) {
+export function useQrBreakdown(
+  qrId: string | undefined,
+  dimension: BreakdownDimension,
+  range: ResolvedRange,
+) {
   return useQuery({
     queryKey: ['analytics', 'breakdown', qrId, dimension, range],
-    queryFn: () => api.get<BreakdownRow[]>(`/analytics/qr/${qrId}/breakdown`, { ...range, dimension } as QueryParams),
+    queryFn: () =>
+      api.get<BreakdownRow[]>(`/analytics/qr/${qrId}/breakdown`, {
+        ...range,
+        dimension,
+      } as QueryParams),
     enabled: Boolean(qrId),
   });
 }
 
-export function useQrScans(qrId: string | undefined, range: ResolvedRange, page: number, pageSize = 20) {
+export function useQrScans(
+  qrId: string | undefined,
+  range: ResolvedRange,
+  page: number,
+  pageSize = 20,
+) {
   return useQuery({
     queryKey: ['analytics', 'scans', qrId, range, page, pageSize],
-    queryFn: () => api.get<PaginatedResult<Scan>>(`/analytics/qr/${qrId}/scans`, { ...range, page, pageSize } as QueryParams),
+    queryFn: () =>
+      api.get<PaginatedResult<Scan>>(`/analytics/qr/${qrId}/scans`, {
+        ...range,
+        page,
+        pageSize,
+      } as QueryParams),
     enabled: Boolean(qrId),
   });
 }

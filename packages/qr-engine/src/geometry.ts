@@ -25,7 +25,13 @@ export function insetRadii(r: CornerRadii, amount: number): CornerRadii {
  * radius per corner (native SVG `rect` only supports a single uniform rx/ry,
  * which is not enough for "classy" / neighbor-aware QR module rendering).
  */
-export function roundedRectPath(x: number, y: number, w: number, h: number, r: CornerRadii): string {
+export function roundedRectPath(
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: CornerRadii,
+): string {
   const tl = Math.min(r.tl, w / 2, h / 2);
   const tr = Math.min(r.tr, w / 2, h / 2);
   const br = Math.min(r.br, w / 2, h / 2);
@@ -57,6 +63,12 @@ export function ringPath(
   innerRadii: CornerRadii,
 ): string {
   const outer = roundedRectPath(x, y, size, size, outerRadii);
-  const inner = roundedRectPath(x + thickness, y + thickness, size - thickness * 2, size - thickness * 2, innerRadii);
+  const inner = roundedRectPath(
+    x + thickness,
+    y + thickness,
+    size - thickness * 2,
+    size - thickness * 2,
+    innerRadii,
+  );
   return `${outer} ${inner}`;
 }

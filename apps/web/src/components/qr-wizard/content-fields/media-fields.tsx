@@ -39,7 +39,11 @@ export function PdfFields({ prefix }: { prefix: string }) {
         />
       </Field>
       <Field id="c-title" label="Title" optional error={getFieldError(errors, `${prefix}.title`)}>
-        <Input id="c-title" placeholder="Shown on the landing page" {...register(`${prefix}.title`)} />
+        <Input
+          id="c-title"
+          placeholder="Shown on the landing page"
+          {...register(`${prefix}.title`)}
+        />
       </Field>
     </div>
   );
@@ -75,7 +79,12 @@ export function ImageFields({ prefix }: { prefix: string }) {
       <Field id="c-title" label="Title" optional error={getFieldError(errors, `${prefix}.title`)}>
         <Input id="c-title" {...register(`${prefix}.title`)} />
       </Field>
-      <Field id="c-caption" label="Caption" optional error={getFieldError(errors, `${prefix}.caption`)}>
+      <Field
+        id="c-caption"
+        label="Caption"
+        optional
+        error={getFieldError(errors, `${prefix}.caption`)}
+      >
         <Textarea id="c-caption" rows={2} {...register(`${prefix}.caption`)} />
       </Field>
     </div>

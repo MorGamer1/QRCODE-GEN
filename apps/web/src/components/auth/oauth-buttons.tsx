@@ -22,7 +22,13 @@ export function OAuthButtons() {
           <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
         </div>
       </div>
-      <div className={data.oauth.google && data.oauth.github ? 'grid grid-cols-2 gap-3' : 'grid grid-cols-1 gap-3'}>
+      <div
+        className={
+          data.oauth.google && data.oauth.github
+            ? 'grid grid-cols-2 gap-3'
+            : 'grid grid-cols-1 gap-3'
+        }
+      >
         {data.oauth.google && (
           <Button variant="outline" asChild>
             <a href={`${API_BASE}/auth/google`}>

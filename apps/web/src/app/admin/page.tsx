@@ -30,7 +30,9 @@ export default function AdminOverviewPage() {
               {isPending ? (
                 <Skeleton className="h-7 w-16" />
               ) : (
-                <p className="text-2xl font-semibold leading-none">{formatNumber(card.value ?? 0)}</p>
+                <p className="text-2xl font-semibold leading-none">
+                  {formatNumber(card.value ?? 0)}
+                </p>
               )}
               <p className="mt-1 text-sm text-muted-foreground">{card.label}</p>
             </div>

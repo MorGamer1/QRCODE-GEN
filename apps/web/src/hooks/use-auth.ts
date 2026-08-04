@@ -61,7 +61,8 @@ export function useRegister() {
   return useMutation({
     mutationFn: (dto: RegisterDto) => api.post<RegisterResponse>('/auth/register', dto),
     onSuccess: (data) => {
-      if (!data.requiresEmailVerification) queryClient.setQueryData(CURRENT_USER_QUERY_KEY, data.user);
+      if (!data.requiresEmailVerification)
+        queryClient.setQueryData(CURRENT_USER_QUERY_KEY, data.user);
     },
   });
 }
@@ -80,13 +81,15 @@ export function useLogout() {
 
 export function useForgotPassword() {
   return useMutation({
-    mutationFn: (dto: ForgotPasswordDto) => api.post<{ success: boolean }>('/auth/forgot-password', dto),
+    mutationFn: (dto: ForgotPasswordDto) =>
+      api.post<{ success: boolean }>('/auth/forgot-password', dto),
   });
 }
 
 export function useResetPassword() {
   return useMutation({
-    mutationFn: (dto: ResetPasswordDto) => api.post<{ success: boolean }>('/auth/reset-password', dto),
+    mutationFn: (dto: ResetPasswordDto) =>
+      api.post<{ success: boolean }>('/auth/reset-password', dto),
   });
 }
 
@@ -98,6 +101,7 @@ export function useVerifyEmail() {
 
 export function useChangePassword() {
   return useMutation({
-    mutationFn: (dto: ChangePasswordDto) => api.post<{ success: boolean }>('/auth/change-password', dto),
+    mutationFn: (dto: ChangePasswordDto) =>
+      api.post<{ success: boolean }>('/auth/change-password', dto),
   });
 }
