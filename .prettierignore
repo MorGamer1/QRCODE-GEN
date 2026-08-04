@@ -5,3 +5,7 @@ build
 coverage
 pnpm-lock.yaml
 *.md.bak
+
+# Vendored/generated data, not hand-authored - formatting it just bloats a static asset that
+# ships to every browser for no readability benefit (nobody hand-edits topojson).
+apps/web/public/map/countries-110m.json
