@@ -2,25 +2,44 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
+  BulkActionDto,
   CreateQrCodeDto,
   DuplicateQrDto,
+  ListQrQueryDto,
   RedirectSettingsDto,
   UpdateQrDesignDto,
   UpdateQrMetaDto,
 } from '@qrgen/shared';
 import { api } from '@/lib/api-client';
-import type { QrCode } from '@/lib/qr-types';
+import type { PaginatedResult, QrCode } from '@/lib/qr-types';
 
 export const qrCodeKeys = {
   all: ['qr-codes'] as const,
+  list: (query: Partial<ListQrQueryDto>) => ['qr-codes', 'list', query] as const,
   detail: (id: string) => ['qr-codes', 'detail', id] as const,
 };
+
+export function useQrCodes(query: Partial<ListQrQueryDto>) {
+  return useQuery({
+    queryKey: qrCodeKeys.list(query),
+    queryFn: () => api.get<PaginatedResult<QrCode>>('/qr-codes', query as Record<string, string | number | boolean | undefined>),
+    placeholderData: (prev) => prev,
+  });
+}
 
 export function useQrCode(id: string | undefined) {
   return useQuery({
     queryKey: qrCodeKeys.detail(id ?? ''),
     queryFn: () => api.get<QrCode>(`/qr-codes/${id}`),
     enabled: Boolean(id),
+  });
+}
+
+export function useBulkQrAction() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: BulkActionDto) => api.post<{ affected: number }>('/qr-codes/bulk', dto),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: qrCodeKeys.all, exact: false }),
   });
 }
 

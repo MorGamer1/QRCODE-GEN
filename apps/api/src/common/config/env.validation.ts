@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { booleanFromString } from '@qrgen/shared';
 
 export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -27,7 +28,7 @@ export const envSchema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASSWORD: z.string().optional(),
   SMTP_FROM: z.string().default('QR Code Generator <no-reply@localhost>'),
-  SMTP_SECURE: z.coerce.boolean().default(false),
+  SMTP_SECURE: booleanFromString().default(false),
 
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
@@ -42,7 +43,7 @@ export const envSchema = z.object({
   S3_ACCESS_KEY_ID: z.string().min(1),
   S3_SECRET_ACCESS_KEY: z.string().min(1),
   S3_BUCKET: z.string().default('qrgen'),
-  S3_FORCE_PATH_STYLE: z.coerce.boolean().default(true),
+  S3_FORCE_PATH_STYLE: booleanFromString().default(true),
   /// Public-facing URL prefix used to build download links (may be a CDN/proxy in front of S3_ENDPOINT).
   S3_PUBLIC_URL: z.string().optional(),
 

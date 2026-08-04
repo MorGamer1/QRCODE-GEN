@@ -3,7 +3,7 @@ import { ContentType, QrCodeType, RedirectStatusCode } from '../enums';
 import { contentSchemaMap } from '../content/schemas';
 import { CONTENT_TYPE_REGISTRY } from '../content/registry';
 import { qrDesignSchema } from '../design/schema';
-import { paginationQuerySchema } from './pagination';
+import { booleanFromString, paginationQuerySchema } from './pagination';
 import { QR_MAX_TAGS, QR_NAME_MAX_LENGTH, QR_NOTES_MAX_LENGTH, QR_TAG_MAX_LENGTH } from '../constants';
 
 export const tagSchema = z.string().trim().min(1).max(QR_TAG_MAX_LENGTH);
@@ -105,8 +105,8 @@ export const listQrQuerySchema = paginationQuerySchema.extend({
   categoryId: z.string().uuid().optional(),
   type: z.nativeEnum(QrCodeType).optional(),
   contentType: z.nativeEnum(ContentType).optional(),
-  isFavorite: z.coerce.boolean().optional(),
-  isArchived: z.coerce.boolean().default(false),
+  isFavorite: booleanFromString().optional(),
+  isArchived: booleanFromString().default(false),
   sortBy: z
     .enum(['createdAt', 'updatedAt', 'name', 'totalScans', 'lastScannedAt'])
     .default('createdAt'),

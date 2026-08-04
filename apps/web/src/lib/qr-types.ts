@@ -68,3 +68,65 @@ export interface PaginatedResult<T> {
   total: number;
   totalPages: number;
 }
+
+export interface Scan {
+  id: string;
+  qrCodeId: string;
+  scannedAt: string;
+  isUnique: boolean;
+  country: string | null;
+  region: string | null;
+  city: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  deviceType: string | null;
+  os: string | null;
+  osVersion: string | null;
+  browser: string | null;
+  browserVersion: string | null;
+  language: string | null;
+  referrer: string | null;
+  timezone: string | null;
+  utmSource: string | null;
+  utmMedium: string | null;
+  utmCampaign: string | null;
+  utmTerm: string | null;
+  utmContent: string | null;
+}
+
+export interface TimeseriesPoint {
+  bucket: string;
+  totalScans: number;
+  uniqueScans: number;
+}
+
+export interface QrSummary {
+  totalScans: number;
+  uniqueScans: number;
+  firstScannedAt: string | null;
+  lastScannedAt: string | null;
+}
+
+export type BreakdownDimension =
+  | 'country'
+  | 'city'
+  | 'deviceType'
+  | 'os'
+  | 'browser'
+  | 'language'
+  | 'referrer'
+  | 'utmSource'
+  | 'utmCampaign';
+
+export interface BreakdownRow {
+  value: string;
+  count: number;
+}
+
+export interface AnalyticsOverview {
+  totalScans: number;
+  totalUniqueScans: number;
+  totalQrCodes: number;
+  topQrCodes: { id: string; name: string; totalScans: number; uniqueScans: number }[];
+  timeseries: TimeseriesPoint[];
+}

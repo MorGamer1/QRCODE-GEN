@@ -8,6 +8,7 @@ import { useQrCode } from '@/hooks/use-qr-codes';
 import { formatDate } from '@/lib/utils';
 import { QrWizard } from '@/components/qr-wizard/qr-wizard';
 import { RedirectSettingsForm } from '@/components/qr-wizard/redirect-settings-form';
+import { QrAnalyticsPanel } from '@/components/analytics/qr-analytics-panel';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -58,7 +59,12 @@ export default function QrCodeDetailPage() {
 
       <QrWizard existingQr={qr} />
 
-      {qr.type === QrCodeType.DYNAMIC && <RedirectSettingsForm qr={qr} />}
+      {qr.type === QrCodeType.DYNAMIC && (
+        <>
+          <RedirectSettingsForm qr={qr} />
+          <QrAnalyticsPanel qrId={qr.id} totalScans={qr.totalScans} uniqueScans={qr.uniqueScans} />
+        </>
+      )}
     </div>
   );
 }
