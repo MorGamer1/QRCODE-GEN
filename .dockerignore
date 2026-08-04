@@ -1,0 +1,57 @@
+# Build context for every Dockerfile in this repo is the monorepo root (see docker-compose.yml
+# `build.context: .`), so this file is the ONLY thing standing between a developer's local
+# secrets and a Docker image layer. Verified empirically: `pnpm deploy` copies whatever is in
+# the package directory - including a real .env file if one is sitting there - so `.env` must
+# never reach the build context in the first place.
+
+# Env files - NEVER send local secrets into a build context. Real config is injected at
+# container runtime via docker-compose.yml `environment:`, not baked into the image.
+.env
+**/.env
+.env.local
+**/.env.local
+.env.*.local
+**/.env.*.local
+!.env.example
+!**/.env.example
+
+# Dependencies and build outputs - reinstalled/recompiled fresh inside the Docker build stage
+node_modules
+**/node_modules
+.pnpm-store
+dist
+**/dist
+.next
+**/.next
+.turbo
+**/.turbo
+*.tsbuildinfo
+
+# VCS / CI / editor / OS
+.git
+.github
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+
+# Tests / reports
+coverage
+**/coverage
+.nyc_output
+playwright-report
+test-results
+*.log
+**/*.log
+
+# Local-only artifacts that sometimes appear in a dev checkout
+dump.rdb
+**/dump.rdb
+apps/api/uploads
+infra/data
+
+# Not needed inside any image
+docs
+*.md
+!README.md

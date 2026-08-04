@@ -1,0 +1,220 @@
+# Production stack. One-command startup:
+#   cp .env.example .env   # then fill in the required values (see comments in that file)
+#   docker compose up -d --build
+#
+# nginx is the only service that publishes a port to the host - postgres/redis/minio/api/
+# worker/web are only reachable from each other, over the internal `qrgen` network.
+
+x-restart-policy: &restart-policy
+  restart: unless-stopped
+
+x-security-opts: &security-opts
+  security_opt:
+    - no-new-privileges:true
+
+# Shared by api + worker: same image, same runtime config, different process (see
+# apps/api/Dockerfile and the `command:` override on the worker service below).
+x-api-env: &api-env
+  NODE_ENV: production
+  DATABASE_URL: postgresql://${POSTGRES_USER:-qrgen}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-qrgen}
+  REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+
+  PUBLIC_BASE_URL: ${PUBLIC_BASE_URL}
+  WEB_BASE_URL: ${WEB_BASE_URL}
+
+  JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+  JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+  JWT_ACCESS_TTL: ${JWT_ACCESS_TTL:-15m}
+  JWT_REFRESH_TTL: ${JWT_REFRESH_TTL:-30d}
+  JWT_REFRESH_TTL_DAYS: ${JWT_REFRESH_TTL_DAYS:-30}
+
+  COOKIE_SECRET: ${COOKIE_SECRET}
+  TWO_FACTOR_ISSUER: ${TWO_FACTOR_ISSUER:-QR Code Generator}
+
+  SMTP_HOST: ${SMTP_HOST:-}
+  SMTP_PORT: ${SMTP_PORT:-587}
+  SMTP_USER: ${SMTP_USER:-}
+  SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+  SMTP_FROM: ${SMTP_FROM:-QR Code Generator <no-reply@localhost>}
+  SMTP_SECURE: ${SMTP_SECURE:-false}
+
+  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+  GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+  GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-}
+  GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+  GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+  GITHUB_CALLBACK_URL: ${GITHUB_CALLBACK_URL:-}
+
+  # Defaults point at the bundled minio service - override all four to use real AWS S3 / R2 /
+  # Backblaze B2 / etc instead (and see the minio-init comment below for what S3_PUBLIC_URL
+  # needs to be for the bundled default to actually work from a browser).
+  S3_ENDPOINT: ${S3_ENDPOINT:-http://minio:9000}
+  S3_REGION: ${S3_REGION:-us-east-1}
+  S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+  S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+  S3_BUCKET: ${S3_BUCKET:-qrgen}
+  S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE:-true}
+  S3_PUBLIC_URL: ${S3_PUBLIC_URL:-${PUBLIC_BASE_URL}/files/${S3_BUCKET:-qrgen}}
+
+  LOG_LEVEL: ${LOG_LEVEL:-log}
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    <<: [*restart-policy, *security-opts]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-qrgen}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required - see .env.example}
+      POSTGRES_DB: ${POSTGRES_DB:-qrgen}
+    volumes:
+      - ./infra/data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-qrgen} -d ${POSTGRES_DB:-qrgen}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks: [qrgen]
+
+  redis:
+    image: redis:7-alpine
+    <<: [*restart-policy, *security-opts]
+    command: >
+      redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required - see .env.example}
+    volumes:
+      - ./infra/data/redis:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a ${REDIS_PASSWORD} ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks: [qrgen]
+
+  minio:
+    image: minio/minio:RELEASE.2024-12-18T13-15-44Z
+    <<: [*restart-policy, *security-opts]
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID:?S3_ACCESS_KEY_ID is required - see .env.example}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_ACCESS_KEY:?S3_SECRET_ACCESS_KEY is required - see .env.example}
+    volumes:
+      - ./infra/data/minio:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks: [qrgen]
+
+  # One-off: creates the app's bucket and grants anonymous read (not write) on it, then exits.
+  # Uploaded files (QR logos, "Image" content-type assets) are meant to be publicly viewable -
+  # that's the point of embedding them in a QR code - so the app serves them back via a plain
+  # public URL (nginx's /files/ -> minio) rather than per-request signed URLs. That choice
+  # also sidesteps a real footgun: an S3 presigned URL is only valid for the exact host:port it
+  # was signed against, so proxying *signed* MinIO URLs through nginx would require nginx to
+  # forge the original Host header back to `minio:9000` on the way through, or every download
+  # link would fail signature verification. Uploads/deletes still require the real
+  # access/secret keys (see apps/api/src/modules/files/files.service.ts) - only GET is public.
+  minio-init:
+    image: minio/mc:RELEASE.2024-12-18T13-15-44Z
+    <<: [*security-opts]
+    restart: "no"
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      S3_BUCKET: ${S3_BUCKET:-qrgen}
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_ACCESS_KEY}
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 \"$$MINIO_ROOT_USER\" \"$$MINIO_ROOT_PASSWORD\" &&
+      mc mb --ignore-existing \"local/$$S3_BUCKET\" &&
+      mc anonymous set download \"local/$$S3_BUCKET\"
+      "
+    networks: [qrgen]
+
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: build
+    <<: [*security-opts]
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-qrgen}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-qrgen}
+    command: ["pnpm", "--filter=@qrgen/api", "exec", "prisma", "migrate", "deploy"]
+    networks: [qrgen]
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: runtime
+    <<: [*restart-policy, *security-opts]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      <<: *api-env
+    volumes:
+      - ./infra/data/backups:/app/backups
+    networks: [qrgen]
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: runtime
+    <<: [*restart-policy, *security-opts]
+    command: ["node", "dist/worker.js"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      <<: *api-env
+    networks: [qrgen]
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        API_URL: http://api:4000
+    <<: [*restart-policy, *security-opts]
+    depends_on:
+      - api
+    networks: [qrgen]
+
+  nginx:
+    image: nginx:1.27-alpine
+    <<: [*restart-policy, *security-opts]
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+    volumes:
+      - ./infra/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/docker/nginx/proxy-common.conf:/etc/nginx/proxy-common.conf:ro
+      - ./infra/docker/nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - api
+      - web
+    networks: [qrgen]
+
+networks:
+  qrgen:
+    driver: bridge

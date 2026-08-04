@@ -1,10 +1,19 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import localFont from 'next/font/local';
 import { Providers } from './providers';
 import { cn } from '@/lib/utils';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
+// Self-hosted (not next/font/google) so `next build` never depends on reaching Google Fonts -
+// self-hosters may build this image on networks with restricted/no egress. Variable font file
+// covers the full weight axis (100-900) from a single ~350KB woff2, sourced from
+// https://github.com/rsms/inter (OFL-1.1 licensed).
+const inter = localFont({
+  src: './fonts/InterVariable.woff2',
+  variable: '--font-inter',
+  display: 'swap',
+  weight: '100 900',
+});
 
 export const metadata: Metadata = {
   title: { default: 'QRGen — QR Code Generator', template: '%s · QRGen' },
