@@ -27,7 +27,7 @@
     "db:studio": "pnpm --filter @qrgen/api db:studio"
   },
   "devDependencies": {
-    "turbo": "^2.3.3",
+    "turbo": "^2.10.10",
     "prettier": "^3.4.2",
     "husky": "^9.1.7",
     "lint-staged": "^15.3.0",
@@ -35,7 +35,7 @@
     "eslint": "^8.57.1",
     "@eslint/js": "^8.57.1",
     "@eslint/eslintrc": "^2.1.4",
-    "typescript-eslint": "^8.18.0"
+    "typescript-eslint": "^8.67.0"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
