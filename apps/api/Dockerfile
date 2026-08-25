@@ -11,7 +11,7 @@
 # Build context MUST be the monorepo root (see docker-compose.yml `build.context: .`) so pnpm
 # can resolve the workspace: protocol against the root lockfile and every package.json.
 
-FROM node:22-slim AS base
+FROM node:25-slim AS base
 RUN corepack enable
 ENV PNPM_HOME="/pnpm" PATH="$PNPM_HOME:$PATH"
 WORKDIR /app
@@ -58,7 +58,7 @@ RUN pnpm --filter=@qrgen/api deploy --prod --legacy /prod/api
 # runtime: nothing but the pruned output + its own production node_modules. No compilers, no
 # devDependencies, no monorepo source, no lockfile.
 # -----------------------------------------------------------------------------------------
-FROM node:22-slim AS runtime
+FROM node:25-slim AS runtime
 
 # openssl: Prisma's query engine binary dynamically links against libssl at runtime, not just
 # at generate time. dumb-init: correct SIGTERM/SIGINT forwarding + zombie reaping as PID 1.
